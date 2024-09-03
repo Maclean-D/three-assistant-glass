@@ -3,51 +3,22 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { loadMixamoAnimation } from './loadMixamoAnimation.js';
+import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 
-// Set up renderer with 1440 × 2560 resolution
+// Set up renderer to use full screen
 const renderer = new THREE.WebGLRenderer();
-const aspectRatio = 1440 / 2560;
-let width = window.innerWidth;
-let height = window.innerWidth / aspectRatio;
-
-if (height > window.innerHeight) {
-    height = window.innerHeight;
-    width = window.innerHeight * aspectRatio;
-}
-
-renderer.setSize(width, height);
+renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setClearColor(0x000000, 0); // Make renderer background transparent
 document.body.appendChild(renderer.domElement);
 
-// camera
-const camera = new THREE.PerspectiveCamera(30.0, aspectRatio, 0.1, 20.0);
+// Update camera
+const camera = new THREE.PerspectiveCamera(30.0, window.innerWidth / window.innerHeight, 0.1, 20.0);
 camera.position.set(0.0, 1.0, 2.73);
 
 // scene
 const scene = new THREE.Scene();
-
-// Load background texture
-const textureLoader = new THREE.TextureLoader();
-textureLoader.load('background.jpg', (texture) => {
-    const imageAspect = texture.image.width / texture.image.height;
-    const planeAspect = aspectRatio;
-    
-    let scaleX, scaleY;
-    if (imageAspect > planeAspect) {
-        scaleY = 2;
-        scaleX = scaleY * (imageAspect / planeAspect);
-    } else {
-        scaleX = 2 * planeAspect;
-        scaleY = scaleX / imageAspect;
-    }
-
-    const bgGeometry = new THREE.PlaneGeometry(scaleX, scaleY);
-    const bgMaterial = new THREE.MeshBasicMaterial({ map: texture });
-    const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
-    bgMesh.position.set(0, scaleY / 2, -1);
-    scene.add(bgMesh);
-});
+scene.background = new THREE.Color('#efead7');
 
 // camera controls
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -163,6 +134,151 @@ scene.add( gridHelper );
 const axesHelper = new THREE.AxesHelper( 5 );
 scene.add( axesHelper );
 
+// Create a group to hold all the sparkles
+const sparklesGroup = new THREE.Group();
+scene.add(sparklesGroup);
+
+// Load the SVG
+const loader = new SVGLoader();
+loader.load('icons/sparkles.svg', (data) => {
+    const paths = data.paths;
+    const sparkleColor = new THREE.Color('#bfbbac');
+
+    // Create sparkles and add them to the group
+    const rows = 20;
+    const cols = 20;
+    const sparkleSize = 0.02; // Reduced size further
+    const wallDepth = -15; // Position even further back
+    
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            const sparkleGroup = new THREE.Group();
+            
+            for (let path of paths) {
+                const material = new THREE.MeshBasicMaterial({
+                    color: sparkleColor,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.5, // Reduced opacity
+                    depthWrite: false
+                });
+                
+                const shapes = path.toShapes(true);
+                for (let shape of shapes) {
+                    const geometry = new THREE.ShapeGeometry(shape);
+                    const mesh = new THREE.Mesh(geometry, material);
+                    sparkleGroup.add(mesh);
+                }
+            }
+            
+            sparkleGroup.scale.set(sparkleSize, sparkleSize, sparkleSize);
+            sparkleGroup.position.set(
+                (j - cols / 2) * 1, // Increased spacing
+                (i - rows / 2) * 1, // Increased spacing
+                wallDepth + Math.random() * 2 - 1 // Add some depth variation
+            );
+            
+            // Add random rotation
+            sparkleGroup.rotation.z = Math.random() * Math.PI * 2;
+            
+            sparklesGroup.add(sparkleGroup);
+        }
+    }
+});
+
+// Add this function to create a custom curve for the rounded rectangle
+function createRoundedRectangleCurve(width, height, radius) {
+    const curve = new THREE.CurvePath();
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+
+    // Helper function to create a smooth corner
+    const createCorner = (startX, startY, midX, midY, endX, endY) => {
+        return new THREE.QuadraticBezierCurve3(
+            new THREE.Vector3(startX, startY, 0),
+            new THREE.Vector3(midX, midY, 0),
+            new THREE.Vector3(endX, endY, 0)
+        );
+    };
+
+    // Top right corner
+    curve.add(createCorner(halfWidth - radius, halfHeight, halfWidth, halfHeight, halfWidth, halfHeight - radius));
+
+    // Right side
+    curve.add(new THREE.LineCurve3(
+        new THREE.Vector3(halfWidth, halfHeight - radius, 0),
+        new THREE.Vector3(halfWidth, -halfHeight + radius, 0)
+    ));
+
+    // Bottom right corner
+    curve.add(createCorner(halfWidth, -halfHeight + radius, halfWidth, -halfHeight, halfWidth - radius, -halfHeight));
+
+    // Bottom side
+    curve.add(new THREE.LineCurve3(
+        new THREE.Vector3(halfWidth - radius, -halfHeight, 0),
+        new THREE.Vector3(-halfWidth + radius, -halfHeight, 0)
+    ));
+
+    // Bottom left corner
+    curve.add(createCorner(-halfWidth + radius, -halfHeight, -halfWidth, -halfHeight, -halfWidth, -halfHeight + radius));
+
+    // Left side
+    curve.add(new THREE.LineCurve3(
+        new THREE.Vector3(-halfWidth, -halfHeight + radius, 0),
+        new THREE.Vector3(-halfWidth, halfHeight - radius, 0)
+    ));
+
+    // Top left corner
+    curve.add(createCorner(-halfWidth, halfHeight - radius, -halfWidth, halfHeight, -halfWidth + radius, halfHeight));
+
+    // Top side
+    curve.add(new THREE.LineCurve3(
+        new THREE.Vector3(-halfWidth + radius, halfHeight, 0),
+        new THREE.Vector3(halfWidth - radius, halfHeight, 0)
+    ));
+
+    return curve;
+}
+
+// Update these values for better visibility and more rounded corners
+const outlineWidth = 0.75;
+const outlineHeight = 1.5;
+const cornerRadius = 0.1;
+const outlineColor = new THREE.Color('#71c5e8');
+const tubeRadius = 0.005;
+
+const roundedRectangleCurve = createRoundedRectangleCurve(outlineWidth, outlineHeight, cornerRadius);
+const tubeGeometry = new THREE.TubeGeometry(roundedRectangleCurve, 200, tubeRadius, 8, false);
+const tubeMaterial = new THREE.MeshBasicMaterial({ color: outlineColor });
+const outline = new THREE.Mesh(tubeGeometry, tubeMaterial);
+
+outline.position.set(0, outlineHeight / 2 + 0.3, -0.5);
+scene.add(outline);
+
+// Keep the original outline dimensions
+const greenRectWidth = outlineWidth * 0.9; // Reduced by 10%
+const greenRectHeight = outlineHeight / 4; // Half the height of the outline
+
+const roundedCorners = new THREE.Shape();
+roundedCorners.moveTo(-greenRectWidth / 2 + cornerRadius, -greenRectHeight / 2);
+roundedCorners.lineTo(greenRectWidth / 2 - cornerRadius, -greenRectHeight / 2);
+roundedCorners.quadraticCurveTo(greenRectWidth / 2, -greenRectHeight / 2, greenRectWidth / 2, -greenRectHeight / 2 + cornerRadius);
+roundedCorners.lineTo(greenRectWidth / 2, greenRectHeight / 2 - cornerRadius);
+roundedCorners.quadraticCurveTo(greenRectWidth / 2, greenRectHeight / 2, greenRectWidth / 2 - cornerRadius, greenRectHeight / 2);
+roundedCorners.lineTo(-greenRectWidth / 2 + cornerRadius, greenRectHeight / 2);
+roundedCorners.quadraticCurveTo(-greenRectWidth / 2, greenRectHeight / 2, -greenRectWidth / 2, greenRectHeight / 2 - cornerRadius);
+roundedCorners.lineTo(-greenRectWidth / 2, -greenRectHeight / 2 + cornerRadius);
+roundedCorners.quadraticCurveTo(-greenRectWidth / 2, -greenRectHeight / 2, -greenRectWidth / 2 + cornerRadius, -greenRectHeight / 2);
+
+const roundedRectGeometry = new THREE.ShapeGeometry(roundedCorners);
+const roundedRectMaterial = new THREE.MeshBasicMaterial({ 
+    color: 0x1d3c34,
+    side: THREE.DoubleSide
+});
+const roundedRect = new THREE.Mesh(roundedRectGeometry, roundedRectMaterial);
+roundedRect.position.set(0, outlineHeight / 2 + -0.18, 0.25); // Kept at the same vertical position as the outline
+scene.add(roundedRect);
+
 // animate
 const clock = new THREE.Clock();
 
@@ -179,6 +295,22 @@ function animate() {
         currentVrm.update(deltaTime);
     }
 
+    // Move sparkles
+    sparklesGroup.children.forEach((sparkle) => {
+        sparkle.position.y -= 0.0005; // Even slower vertical movement
+        sparkle.position.x += 0.00025; // Even slower horizontal movement
+
+        // Rotate the sparkle
+        sparkle.rotation.z += 0.002;
+
+        if (sparkle.position.y < -10) {
+            sparkle.position.y = 10;
+        }
+        if (sparkle.position.x > 10) {
+            sparkle.position.x = -10;
+        }
+    });
+
     renderer.render(scene, camera);
 }
 
@@ -186,36 +318,9 @@ animate();
 
 // Resize handler
 window.addEventListener('resize', () => {
-    let width = window.innerWidth;
-    let height = window.innerWidth / aspectRatio;
-
-    if (height > window.innerHeight) {
-        height = window.innerHeight;
-        width = window.innerHeight * aspectRatio;
-    }
-
-    camera.aspect = aspectRatio;
+    camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
-
-    // Update background plane size if it exists
-    const bgMesh = scene.getObjectByName('background');
-    if (bgMesh) {
-        const imageAspect = bgMesh.material.map.image.width / bgMesh.material.map.image.height;
-        const planeAspect = aspectRatio;
-        
-        let scaleX, scaleY;
-        if (imageAspect > planeAspect) {
-            scaleY = 2;
-            scaleX = scaleY * (imageAspect / planeAspect);
-        } else {
-            scaleX = 2 * planeAspect;
-            scaleY = scaleX / imageAspect;
-        }
-
-        bgMesh.scale.set(scaleX, scaleY, 1);
-        bgMesh.position.set(0, scaleY / 2, -1);
-    }
+    renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
 // Add back the drag and drop functionality

@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "express": "^4.17.1",
-    "open": "^8.4.2"
+    "open": "^8.4.2",
+    "three": "^0.168.0"
   }
 }
