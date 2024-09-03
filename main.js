@@ -40,6 +40,9 @@ let currentAnimationUrl = undefined;
 let currentMixer = undefined;
 let currentAnimationName = 'idleFemale.fbx'; // Start with idle animation name
 
+let currentVrmName = 'character'; // Default name
+let vrmNameMesh;
+
 function loadVRM(modelUrl) {
     const loader = new GLTFLoader();
     loader.crossOrigin = 'anonymous';
@@ -69,6 +72,10 @@ function loadVRM(modelUrl) {
             });
 
             console.log('VRM model loaded:', modelUrl);
+
+            // Update the currentVrmName and display
+            currentVrmName = modelUrl.split('/').pop().split('.')[0];
+            updateVrmNameDisplay();
 
             // Automatically load the idle animation after the VRM is loaded
             loadFBX(idleAnimationUrl);
@@ -305,7 +312,7 @@ loadFont('Mali').then(() => {
   
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
-  const fontSize = 38; // Reduced from 40 to 36 (10% smaller)
+  const fontSize = 36; // Reduced from 40 to 36 (10% smaller)
   context.font = `${fontSize}px Mali`;
 
   const maxWidth = greenRectWidth * 0.9 * 1000; // Keep this the same
@@ -362,6 +369,73 @@ loadFont('Mali').then(() => {
 
   scene.add(textMesh);
 }).catch(error => console.error('Error loading font:', error));
+
+// Add this function to create and update the VRM name display
+function updateVrmNameDisplay() {
+  if (vrmNameMesh) {
+    scene.remove(vrmNameMesh);
+  }
+
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  const fontSize = 28;
+  context.font = `${fontSize}px Mali`;
+
+  const metrics = context.measureText(currentVrmName);
+  const textWidth = metrics.width;
+  const padding = 14;
+  const cornerRadius = 12;
+
+  canvas.width = textWidth + padding * 2;
+  canvas.height = fontSize + padding * 2;
+
+  // Create rounded rectangle
+  context.beginPath();
+  context.moveTo(cornerRadius, 0);
+  context.lineTo(canvas.width - cornerRadius, 0);
+  context.quadraticCurveTo(canvas.width, 0, canvas.width, cornerRadius);
+  context.lineTo(canvas.width, canvas.height - cornerRadius);
+  context.quadraticCurveTo(canvas.width, canvas.height, canvas.width - cornerRadius, canvas.height);
+  context.lineTo(cornerRadius, canvas.height);
+  context.quadraticCurveTo(0, canvas.height, 0, canvas.height - cornerRadius);
+  context.lineTo(0, cornerRadius);
+  context.quadraticCurveTo(0, 0, cornerRadius, 0);
+  context.closePath();
+
+  // Fill the rounded rectangle with the original color
+  context.fillStyle = '#1c532b';
+  context.fill();
+
+  // Add text
+  context.font = `${fontSize}px Mali`;
+  context.fillStyle = '#efead7';
+  context.textAlign = 'left';
+  context.textBaseline = 'middle';
+  context.fillText(currentVrmName, padding, canvas.height / 2);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+
+  // Use MeshBasicMaterial to ignore lighting
+  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+  const geometry = new THREE.PlaneGeometry(canvas.width / 700, canvas.height / 700);
+
+  vrmNameMesh = new THREE.Mesh(geometry, material);
+
+  // Position the name box above the dark green box
+  vrmNameMesh.position.set(
+    roundedRect.position.x - greenRectWidth / 2 + (canvas.width / 1400) + 0.05,
+    roundedRect.position.y + greenRectHeight / 2 + 0,
+    roundedRect.position.z + 0.02
+  );
+
+  scene.add(vrmNameMesh);
+}
+
+// Call updateVrmNameDisplay after the scene is set up
+// Add this line after you add the roundedRect to the scene
+updateVrmNameDisplay();
 
 // animate
 const clock = new THREE.Clock();
