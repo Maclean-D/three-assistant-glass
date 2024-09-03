@@ -301,7 +301,7 @@ function loadFont(fontFamily) {
 
 // Replace the font loading and text creation part with this
 loadFont('Mali').then(() => {
-  const message = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer";
+  const message = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an";
   
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
