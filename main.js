@@ -279,6 +279,90 @@ const roundedRect = new THREE.Mesh(roundedRectGeometry, roundedRectMaterial);
 roundedRect.position.set(0, outlineHeight / 2 + -0.18, 0.25); // Kept at the same vertical position as the outline
 scene.add(roundedRect);
 
+// Add this function at the top of your file, outside of any other function
+function loadFont(fontFamily) {
+  return new Promise((resolve, reject) => {
+    const link = document.createElement('link');
+    link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(' ', '+')}:wght@500&display=swap`;
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    link.onload = () => {
+      // Font loaded successfully
+      resolve();
+    };
+
+    link.onerror = () => {
+      // Font failed to load
+      reject(new Error(`Failed to load font: ${fontFamily}`));
+    };
+  });
+}
+
+// Replace the font loading and text creation part with this
+loadFont('Mali').then(() => {
+  const message = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer";
+  
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  const fontSize = 38; // Reduced from 40 to 36 (10% smaller)
+  context.font = `${fontSize}px Mali`;
+
+  const maxWidth = greenRectWidth * 0.9 * 1000; // Keep this the same
+  const words = message.split(' ');
+  let lines = [];
+  let currentLine = words[0];
+
+  for (let i = 1; i < words.length; i++) {
+    const testLine = currentLine + ' ' + words[i];
+    const metrics = context.measureText(testLine);
+    const testWidth = metrics.width;
+
+    if (testWidth > maxWidth) {
+      lines.push(currentLine);
+      currentLine = words[i];
+    } else {
+      currentLine = testLine;
+    }
+  }
+  lines.push(currentLine);
+
+  const wrappedText = lines.join('\n');
+
+  const textCanvas = document.createElement('canvas');
+  const textContext = textCanvas.getContext('2d');
+  textCanvas.width = greenRectWidth * 1000; // Keep this the same
+  textCanvas.height = greenRectHeight * 1000; // Keep this the same
+
+  textContext.font = `${fontSize}px Mali`;
+  textContext.fillStyle = '#efead7';
+  textContext.textAlign = 'center';
+  textContext.textBaseline = 'middle';
+
+  const lineHeight = fontSize * 1.2;
+  const totalTextHeight = lines.length * lineHeight;
+  const startY = (textCanvas.height - totalTextHeight) / 2 + fontSize / 2;
+
+  lines.forEach((line, index) => {
+    textContext.fillText(line, textCanvas.width / 2, startY + index * lineHeight);
+  });
+
+  const texture = new THREE.CanvasTexture(textCanvas);
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+  const geometry = new THREE.PlaneGeometry(greenRectWidth, greenRectHeight);
+  const textMesh = new THREE.Mesh(geometry, material);
+
+  textMesh.position.set(
+    roundedRect.position.x,
+    roundedRect.position.y,
+    roundedRect.position.z + 0.01 // Slightly in front of the green rectangle
+  );
+
+  scene.add(textMesh);
+}).catch(error => console.error('Error loading font:', error));
+
 // animate
 const clock = new THREE.Clock();
 
