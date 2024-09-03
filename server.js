@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const open = require('open');
 const app = express();
 const port = 3000;
 
@@ -28,4 +29,5 @@ app.get('/animations', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+  open(`http://localhost:${port}`);
 });
