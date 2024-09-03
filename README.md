@@ -1,6 +1,6 @@
 # Three-Assistant-Glass
 
-A web-based 3D character viewer and animator using Three.js and VRM.
+A web-based 3D character viewer and animator made for Looking Glass Go using Three.js and three-vrm.
 
 ## Prerequisites
 
@@ -22,22 +22,8 @@ A web-based 3D character viewer and animator using Three.js and VRM.
    ```
    node server.js
    ```
-
-5. Open a web browser and go to `http://localhost:3000`.
-
-## Features
-
-- Load and display VRM models
-- Play and switch between different animations
-- Drag and drop support for loading custom VRM models and FBX animations
-- Responsive design with a 1440 × 2560 aspect ratio
-
 ## Default VRM Model
 
 The default VRM model used in this project is "AvatarSample_A" from VRoid Hub. 
 
 Credit: [AvatarSample_A by VRoid Project](https://hub.vroid.com/en/characters/2843975675147313744/models/5644550979324015604)
-
-## License
-
-[Include your license information here]
