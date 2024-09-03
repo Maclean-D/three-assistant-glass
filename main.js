@@ -31,7 +31,7 @@ const light = new THREE.DirectionalLight(0xffffff, Math.PI);
 light.position.set(1.0, 1.0, 1.0).normalize();
 scene.add(light);
 
-const defaultModelUrl = 'character.vrm';
+const defaultModelUrl = 'Character.vrm';
 const greetingAnimationUrl = 'animations/greeting.fbx';
 const idleAnimationUrl = 'animations/idleFemale.fbx';
 
@@ -40,7 +40,7 @@ let currentAnimationUrl = undefined;
 let currentMixer = undefined;
 let currentAnimationName = 'idleFemale.fbx'; // Start with idle animation name
 
-let currentVrmName = 'character'; // Default name
+let currentVrmName = 'Loading VRM...';
 let vrmNameMesh;
 
 function loadVRM(modelUrl) {
@@ -73,7 +73,7 @@ function loadVRM(modelUrl) {
 
             console.log('VRM model loaded:', modelUrl);
 
-            // Update the currentVrmName and display
+            // Update the currentVrmName to use the filename literally
             currentVrmName = modelUrl.split('/').pop().split('.')[0];
             updateVrmNameDisplay();
 
@@ -133,13 +133,6 @@ function updateAnimationDropdown() {
         select.value = option.value;
     }
 }
-
-// helpers
-const gridHelper = new THREE.GridHelper( 10, 10 );
-scene.add( gridHelper );
-
-const axesHelper = new THREE.AxesHelper( 5 );
-scene.add( axesHelper );
 
 // Create a group to hold all the sparkles
 const sparklesGroup = new THREE.Group();
@@ -308,7 +301,7 @@ function loadFont(fontFamily) {
 
 // Replace the font loading and text creation part with this
 loadFont('Mali').then(() => {
-  const message = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an";
+  const message = "This is dummy text that will be dynamically updated with the conversation transcript.";
   
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
@@ -378,16 +371,17 @@ function updateVrmNameDisplay() {
 
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
-  const fontSize = 28;
+  const scaleFactor = 4; // Increase this factor for higher quality
+  const fontSize = 28 * scaleFactor;
   context.font = `${fontSize}px Mali`;
 
   const metrics = context.measureText(currentVrmName);
   const textWidth = metrics.width;
-  const padding = 14;
-  const cornerRadius = 12;
+  const padding = 14 * scaleFactor;
+  const cornerRadius = 12 * scaleFactor;
 
-  canvas.width = textWidth + padding * 2;
-  canvas.height = fontSize + padding * 2;
+  canvas.width = (textWidth + padding * 2);
+  canvas.height = (fontSize + padding * 2);
 
   // Create rounded rectangle
   context.beginPath();
@@ -419,13 +413,13 @@ function updateVrmNameDisplay() {
 
   // Use MeshBasicMaterial to ignore lighting
   const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-  const geometry = new THREE.PlaneGeometry(canvas.width / 700, canvas.height / 700);
+  const geometry = new THREE.PlaneGeometry(canvas.width / (700 * scaleFactor), canvas.height / (700 * scaleFactor));
 
   vrmNameMesh = new THREE.Mesh(geometry, material);
 
   // Position the name box above the dark green box
   vrmNameMesh.position.set(
-    roundedRect.position.x - greenRectWidth / 2 + (canvas.width / 1400) + 0.05,
+    roundedRect.position.x - greenRectWidth / 2 + (canvas.width / (1400 * scaleFactor)) + 0.05,
     roundedRect.position.y + greenRectHeight / 2 + 0,
     roundedRect.position.z + 0.02
   );
@@ -496,13 +490,15 @@ window.addEventListener('drop', function (event) {
     const file = files[0];
     if (!file) return;
 
-    const fileType = file.name.split('.').pop();
+    const fileType = file.name.split('.').pop().toLowerCase();
     const blob = new Blob([file], { type: 'application/octet-stream' });
     const url = URL.createObjectURL(blob);
 
     if (fileType === 'fbx') {
         loadFBX(url);
-    } else {
+    } else if (fileType === 'vrm') {
+        // Update currentVrmName with the file name
+        currentVrmName = file.name.split('.')[0];
         loadVRM(url);
     }
 });
