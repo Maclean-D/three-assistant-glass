@@ -29,7 +29,7 @@ Conversational AI character with custom VRM & Vapi assistant support.
 
 [Three.js](https://threejs.org/)
 
-[Three-Vrm](https://github.com/mrdoob/three.js/tree/master/examples/jsm/addons/VRM)
+[three-vrm]([https://github.com/mrdoob/three.js/tree/master/examples/jsm/addons/VRM](https://github.com/pixiv/three-vrm))
 
 [AvatarSample_A by VRoid Project](https://hub.vroid.com/en/characters/2843975675147313744/models/5644550979324015604)  
 
