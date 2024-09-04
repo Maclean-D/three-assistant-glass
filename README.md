@@ -1,4 +1,4 @@
-# Three-Assistant-Glass
+# three-assistant-glass
 
 Conversational AI character with custom VRM & Vapi assistant support.
 
