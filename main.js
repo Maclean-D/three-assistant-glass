@@ -43,7 +43,7 @@ let currentAnimationName = 'idleFemale.fbx'; // Start with idle animation name
 let currentVrmName = 'Loading VRM...';
 let vrmNameMesh;
 
-function loadVRM(modelUrl) {
+function loadVRM(modelUrl, modelName) {
     const loader = new GLTFLoader();
     loader.crossOrigin = 'anonymous';
 
@@ -73,8 +73,8 @@ function loadVRM(modelUrl) {
 
             console.log('VRM model loaded:', modelUrl);
 
-            // Update the currentVrmName to use the filename literally
-            currentVrmName = modelUrl.split('/').pop().split('.')[0];
+            // Use the provided modelName instead of extracting from URL
+            currentVrmName = modelName || 'Unknown';
             updateVrmNameDisplay();
 
             // Automatically load the idle animation after the VRM is loaded
@@ -85,7 +85,7 @@ function loadVRM(modelUrl) {
     );
 }
 
-loadVRM(defaultModelUrl);
+loadVRM(defaultModelUrl, 'Character');
 
 // mixamo animation
 function loadFBX(animationUrl, playOnce = false) {
@@ -483,7 +483,6 @@ window.addEventListener('dragover', function (event) {
 window.addEventListener('drop', function (event) {
     event.preventDefault();
 
-    // read given file then convert it to blob url
     const files = event.dataTransfer.files;
     if (!files) return;
 
@@ -497,9 +496,9 @@ window.addEventListener('drop', function (event) {
     if (fileType === 'fbx') {
         loadFBX(url);
     } else if (fileType === 'vrm') {
-        // Update currentVrmName with the file name
+        // Update currentVrmName with the file name (without extension)
         currentVrmName = file.name.split('.')[0];
-        loadVRM(url);
+        loadVRM(url, currentVrmName);
     }
 });
 
