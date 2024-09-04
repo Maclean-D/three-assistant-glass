@@ -1,6 +1,6 @@
 # Three-Assistant-Glass
 
-A web-based 3D character viewer and animator made for Looking Glass Go using Three.js and three-vrm.
+Conversational AI character with custom VRM & Vapi assistant support.
 
 ## Prerequisites
 
