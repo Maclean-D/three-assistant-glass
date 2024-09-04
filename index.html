@@ -35,13 +35,36 @@
 				padding: 5px;
 				border-radius: 5px;
 			}
+
+			#vapiControls {
+				position: absolute;
+				bottom: 10px;
+				left: 10px;
+				z-index: 100;
+			}
+
+			#vapiControls button {
+				margin-right: 10px;
+				padding: 5px 10px;
+				border-radius: 5px;
+				border: none;
+				background-color: #1c532b;
+				color: #efead7;
+				cursor: pointer;
+			}
 		</style>
+		<script src="https://cdn.jsdelivr.net/gh/balacodeio/Vapi-Web-UMD@latest/dist/latest/vapi-web-bundle.min.js"></script>
 	</head>
 
 	<body>
 		<select id="animationSelect">
 			<option value="">Test an animation</option>
 		</select>
+
+		<div id="vapiControls">
+			<button id="startVapi">Start Vapi Assistant</button>
+			<button id="stopVapi">Stop Vapi Assistant</button>
+		</div>
 
 		<script type="importmap">
 			{

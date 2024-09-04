@@ -27,6 +27,11 @@ app.get('/animations', (req, res) => {
   });
 });
 
+// Serve Vapi UMD bundle
+app.get('/vapi-web-bundle.min.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'node_modules', '@vapi-ai', 'web', 'dist', 'vapi-web-bundle.min.js'));
+});
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
   open(`http://localhost:${port}`);

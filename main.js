@@ -535,3 +535,65 @@ document.getElementById('animationSelect').addEventListener('change', (event) =>
         loadFBX(selectedAnimation, false);
     }
 });
+
+// Add these lines at the top of your file
+const vapiKey = 'REPLACE ME';
+const assistantId = 'REPLACE ME';
+let vapi;
+
+// Add this function to initialize Vapi
+function initializeVapi() {
+    vapi = new Vapi(vapiKey);
+
+    vapi.on('call-start', () => {
+        console.log('Vapi call started');
+    });
+
+    vapi.on('call-end', () => {
+        console.log('Vapi call ended');
+    });
+
+    vapi.on('speech-start', () => {
+        console.log('Vapi started speaking');
+    });
+
+    vapi.on('speech-end', () => {
+        console.log('Vapi stopped speaking');
+    });
+
+    vapi.on('message', (message) => {
+        console.log('Received message:', message);
+        // You can handle different message types here
+    });
+
+    vapi.on('error', (error) => {
+        console.error('Vapi error:', error);
+    });
+}
+
+// Add these functions to start and stop Vapi
+function startVapi() {
+    if (vapi) {
+        vapi.start(assistantId);
+    } else {
+        console.error('Vapi not initialized');
+    }
+}
+
+function stopVapi() {
+    if (vapi) {
+        vapi.stop();
+    } else {
+        console.error('Vapi not initialized');
+    }
+}
+
+// Add this to your existing window.addEventListener('load', ...) function
+window.addEventListener('load', () => {
+    // ... existing code ...
+
+    initializeVapi();
+
+    document.getElementById('startVapi').addEventListener('click', startVapi);
+    document.getElementById('stopVapi').addEventListener('click', stopVapi);
+});
