@@ -35,4 +35,4 @@ Conversational AI character with custom VRM & Vapi assistant support.
 
 [Vapi](https://vapi.ai/)
 
-[balacodeio/Vapi-Web-UMD](https://github.com/balacodeio/Vapi-Web-UMD)
+[Vapi-Web-UMD](https://github.com/balacodeio/Vapi-Web-UMD)
