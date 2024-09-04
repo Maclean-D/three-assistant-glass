@@ -13,17 +13,26 @@ A web-based 3D character viewer and animator made for Looking Glass Go using Thr
 
 2. Open a terminal and navigate to the project directory.
 
-3. Install the required dependencies:
+3. Input your Vapi public key and assistant ID into the main.js file.
+
+4. Install the required dependencies:
    ```
    npm install
    ```
 
-4. Start the server:
+5. Start the server:
    ```
-   node server.js
+   node server.mjs
    ```
-## Default VRM Model
 
-The default VRM model used in this project is "AvatarSample_A" from VRoid Hub. 
+## Credits
 
-Credit: [AvatarSample_A by VRoid Project](https://hub.vroid.com/en/characters/2843975675147313744/models/5644550979324015604)
+[Three.js](https://threejs.org/)
+
+[Three-Vrm](https://github.com/mrdoob/three.js/tree/master/examples/jsm/addons/VRM)
+
+[AvatarSample_A by VRoid Project](https://hub.vroid.com/en/characters/2843975675147313744/models/5644550979324015604)  
+
+[Vapi](https://vapi.ai/)
+
+[balacodeio/Vapi-Web-UMD](https://github.com/balacodeio/Vapi-Web-UMD)

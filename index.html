@@ -9,6 +9,18 @@
 			content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
 		/>
 		<style>
+			@font-face {
+				font-family: 'Mali';
+				src: url('fonts/Mali-Regular.ttf') format('truetype');
+				font-weight: normal;
+				font-style: normal;
+			}
+			@font-face {
+				font-family: 'Mali';
+				src: url('fonts/Mali-Medium.ttf') format('truetype');
+				font-weight: 500;
+				font-style: normal;
+			}
 			body {
 				margin: 0;
 				padding: 0;
@@ -18,6 +30,7 @@
 				align-items: center;
 				height: 100vh;
 				background-color: #efead7;
+				font-family: 'Mali', sans-serif;
 			}
 
 			canvas {
@@ -34,6 +47,7 @@
 				background-color: rgba(255, 255, 255, 0.7);
 				padding: 5px;
 				border-radius: 5px;
+				font-family: 'Mali', cursive;
 			}
 
 			#vapiControls {
@@ -51,6 +65,24 @@
 				background-color: #1c532b;
 				color: #efead7;
 				cursor: pointer;
+				font-family: 'Mali', cursive;
+			}
+
+			#clipboardAlert {
+				position: fixed;
+				top: 20px;
+				right: 20px;
+				background-color: rgba(28, 83, 43, 0.9);
+				color: #efead7;
+				padding: 10px;
+				border-radius: 5px;
+				display: none;
+				z-index: 1000;
+				font-family: 'Mali', cursive;
+			}
+
+			* {
+				font-family: 'Mali', sans-serif;
 			}
 		</style>
 		<script src="https://cdn.jsdelivr.net/gh/balacodeio/Vapi-Web-UMD@latest/dist/latest/vapi-web-bundle.min.js"></script>
@@ -62,9 +94,10 @@
 		</select>
 
 		<div id="vapiControls">
-			<button id="startVapi">Start Vapi Assistant</button>
-			<button id="stopVapi">Stop Vapi Assistant</button>
+			<button id="toggleVapi">Start Vapi Assistant</button>
 		</div>
+
+		<div id="clipboardAlert"></div>
 
 		<script type="importmap">
 			{
@@ -78,5 +111,20 @@
 		</script>
 
 		<script src="main.js" type="module"></script>
+		<script>
+			const socket = new WebSocket('ws://' + location.host);
+			const clipboardAlert = document.getElementById('clipboardAlert');
+
+			socket.onmessage = function(event) {
+				const data = JSON.parse(event.data);
+				if (data.type === 'clipboard') {
+					clipboardAlert.textContent = 'Clipboard Updated: ' + data.content;
+					clipboardAlert.style.display = 'block';
+					setTimeout(() => {
+						clipboardAlert.style.display = 'none';
+					}, 5000);
+				}
+			};
+		</script>
 	</body>
 </html>

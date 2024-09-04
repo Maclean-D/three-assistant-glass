@@ -43,6 +43,12 @@ let currentAnimationName = 'idleFemale.fbx'; // Start with idle animation name
 let currentVrmName = 'Loading VRM...';
 let vrmNameMesh;
 
+let currentSpeaker = 'Character';
+
+let lastBlinkTime = 0;
+const blinkInterval = 4; // Average time between blinks in seconds
+const blinkDuration = 0.17; // Duration of a blink in seconds
+
 function loadVRM(modelUrl, modelName) {
     const loader = new GLTFLoader();
     loader.crossOrigin = 'anonymous';
@@ -279,152 +285,87 @@ const roundedRect = new THREE.Mesh(roundedRectGeometry, roundedRectMaterial);
 roundedRect.position.set(0, outlineHeight / 2 + -0.18, 0.25); // Kept at the same vertical position as the outline
 scene.add(roundedRect);
 
-// Add this function at the top of your file, outside of any other function
-function loadFont(fontFamily) {
+// Replace the loadFont function with this:
+function loadFont(fontFamily, fontPath) {
   return new Promise((resolve, reject) => {
-    const link = document.createElement('link');
-    link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(' ', '+')}:wght@500&display=swap`;
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
-
-    link.onload = () => {
-      // Font loaded successfully
+    const font = new FontFace(fontFamily, `url(${fontPath})`);
+    font.load().then((loadedFont) => {
+      document.fonts.add(loadedFont);
       resolve();
-    };
-
-    link.onerror = () => {
-      // Font failed to load
+    }).catch((error) => {
       reject(new Error(`Failed to load font: ${fontFamily}`));
-    };
+    });
   });
 }
 
-// Replace the font loading and text creation part with this
-loadFont('Mali').then(() => {
-  const message = "This is dummy text that will be dynamically updated with the conversation transcript.";
-  
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  const fontSize = 36; // Reduced from 40 to 36 (10% smaller)
-  context.font = `${fontSize}px Mali`;
-
-  const maxWidth = greenRectWidth * 0.9 * 1000; // Keep this the same
-  const words = message.split(' ');
-  let lines = [];
-  let currentLine = words[0];
-
-  for (let i = 1; i < words.length; i++) {
-    const testLine = currentLine + ' ' + words[i];
-    const metrics = context.measureText(testLine);
-    const testWidth = metrics.width;
-
-    if (testWidth > maxWidth) {
-      lines.push(currentLine);
-      currentLine = words[i];
-    } else {
-      currentLine = testLine;
+// Update the updateVrmNameDisplay function
+function updateVrmNameDisplay(speaker = currentSpeaker) {
+  currentSpeaker = speaker;
+  loadFont('Mali', 'fonts/Mali-Medium.ttf').then(() => {
+    if (vrmNameMesh) {
+      scene.remove(vrmNameMesh);
     }
-  }
-  lines.push(currentLine);
 
-  const wrappedText = lines.join('\n');
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    const scaleFactor = 4; // Increase this factor for higher quality
+    const fontSize = 28 * scaleFactor;
+    context.font = `${fontSize}px Mali`;
 
-  const textCanvas = document.createElement('canvas');
-  const textContext = textCanvas.getContext('2d');
-  textCanvas.width = greenRectWidth * 1000; // Keep this the same
-  textCanvas.height = greenRectHeight * 1000; // Keep this the same
+    const displayName = speaker === 'User' ? 'User' : currentVrmName;
+    const metrics = context.measureText(displayName);
+    const textWidth = metrics.width;
+    const padding = 14 * scaleFactor;
+    const cornerRadius = 12 * scaleFactor;
 
-  textContext.font = `${fontSize}px Mali`;
-  textContext.fillStyle = '#efead7';
-  textContext.textAlign = 'center';
-  textContext.textBaseline = 'middle';
+    canvas.width = (textWidth + padding * 2);
+    canvas.height = (fontSize + padding * 2);
 
-  const lineHeight = fontSize * 1.2;
-  const totalTextHeight = lines.length * lineHeight;
-  const startY = (textCanvas.height - totalTextHeight) / 2 + fontSize / 2;
+    // Create rounded rectangle
+    context.beginPath();
+    context.moveTo(cornerRadius, 0);
+    context.lineTo(canvas.width - cornerRadius, 0);
+    context.quadraticCurveTo(canvas.width, 0, canvas.width, cornerRadius);
+    context.lineTo(canvas.width, canvas.height - cornerRadius);
+    context.quadraticCurveTo(canvas.width, canvas.height, canvas.width - cornerRadius, canvas.height);
+    context.lineTo(cornerRadius, canvas.height);
+    context.quadraticCurveTo(0, canvas.height, 0, canvas.height - cornerRadius);
+    context.lineTo(0, cornerRadius);
+    context.quadraticCurveTo(0, 0, cornerRadius, 0);
+    context.closePath();
 
-  lines.forEach((line, index) => {
-    textContext.fillText(line, textCanvas.width / 2, startY + index * lineHeight);
+    // Fill the rounded rectangle with the original color
+    context.fillStyle = '#1c532b';
+    context.fill();
+
+    // Add text
+    context.font = `${fontSize}px Mali`;
+    context.fillStyle = '#efead7';
+    context.textAlign = 'left';
+    context.textBaseline = 'middle';
+    context.fillText(displayName, padding, canvas.height / 2);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+
+    // Use MeshBasicMaterial to ignore lighting
+    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+    const geometry = new THREE.PlaneGeometry(canvas.width / (700 * scaleFactor), canvas.height / (700 * scaleFactor));
+
+    vrmNameMesh = new THREE.Mesh(geometry, material);
+
+    // Position the name box above the dark green box
+    vrmNameMesh.position.set(
+      roundedRect.position.x - greenRectWidth / 2 + (canvas.width / (1400 * scaleFactor)) + 0.05,
+      roundedRect.position.y + greenRectHeight / 2 + 0,
+      roundedRect.position.z + 0.02
+    );
+
+    scene.add(vrmNameMesh);
+  }).catch((error) => {
+    console.error('Error loading font:', error);
   });
-
-  const texture = new THREE.CanvasTexture(textCanvas);
-  texture.minFilter = THREE.LinearFilter;
-  texture.magFilter = THREE.LinearFilter;
-  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-  const geometry = new THREE.PlaneGeometry(greenRectWidth, greenRectHeight);
-  const textMesh = new THREE.Mesh(geometry, material);
-
-  textMesh.position.set(
-    roundedRect.position.x,
-    roundedRect.position.y,
-    roundedRect.position.z + 0.01 // Slightly in front of the green rectangle
-  );
-
-  scene.add(textMesh);
-}).catch(error => console.error('Error loading font:', error));
-
-// Add this function to create and update the VRM name display
-function updateVrmNameDisplay() {
-  if (vrmNameMesh) {
-    scene.remove(vrmNameMesh);
-  }
-
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  const scaleFactor = 4; // Increase this factor for higher quality
-  const fontSize = 28 * scaleFactor;
-  context.font = `${fontSize}px Mali`;
-
-  const metrics = context.measureText(currentVrmName);
-  const textWidth = metrics.width;
-  const padding = 14 * scaleFactor;
-  const cornerRadius = 12 * scaleFactor;
-
-  canvas.width = (textWidth + padding * 2);
-  canvas.height = (fontSize + padding * 2);
-
-  // Create rounded rectangle
-  context.beginPath();
-  context.moveTo(cornerRadius, 0);
-  context.lineTo(canvas.width - cornerRadius, 0);
-  context.quadraticCurveTo(canvas.width, 0, canvas.width, cornerRadius);
-  context.lineTo(canvas.width, canvas.height - cornerRadius);
-  context.quadraticCurveTo(canvas.width, canvas.height, canvas.width - cornerRadius, canvas.height);
-  context.lineTo(cornerRadius, canvas.height);
-  context.quadraticCurveTo(0, canvas.height, 0, canvas.height - cornerRadius);
-  context.lineTo(0, cornerRadius);
-  context.quadraticCurveTo(0, 0, cornerRadius, 0);
-  context.closePath();
-
-  // Fill the rounded rectangle with the original color
-  context.fillStyle = '#1c532b';
-  context.fill();
-
-  // Add text
-  context.font = `${fontSize}px Mali`;
-  context.fillStyle = '#efead7';
-  context.textAlign = 'left';
-  context.textBaseline = 'middle';
-  context.fillText(currentVrmName, padding, canvas.height / 2);
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.minFilter = THREE.LinearFilter;
-  texture.magFilter = THREE.LinearFilter;
-
-  // Use MeshBasicMaterial to ignore lighting
-  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-  const geometry = new THREE.PlaneGeometry(canvas.width / (700 * scaleFactor), canvas.height / (700 * scaleFactor));
-
-  vrmNameMesh = new THREE.Mesh(geometry, material);
-
-  // Position the name box above the dark green box
-  vrmNameMesh.position.set(
-    roundedRect.position.x - greenRectWidth / 2 + (canvas.width / (1400 * scaleFactor)) + 0.05,
-    roundedRect.position.y + greenRectHeight / 2 + 0,
-    roundedRect.position.z + 0.02
-  );
-
-  scene.add(vrmNameMesh);
 }
 
 // Call updateVrmNameDisplay after the scene is set up
@@ -433,6 +374,33 @@ updateVrmNameDisplay();
 
 // animate
 const clock = new THREE.Clock();
+
+function updateBlink(deltaTime) {
+    if (!currentVrm) return;
+
+    lastBlinkTime += deltaTime;
+
+    // Check if it's time to blink
+    if (lastBlinkTime > blinkInterval) {
+        // Reset the blink timer with some randomness
+        lastBlinkTime = -Math.random() * 2;
+
+        // Perform the blink
+        let blinkProgress = 0;
+        const blinkAnimation = setInterval(() => {
+            blinkProgress += 1 / 60; // Assuming 60 FPS
+            const blinkValue = Math.sin(Math.PI * blinkProgress / blinkDuration);
+            
+            // Close both eyes
+            currentVrm.expressionManager.setValue('blink', blinkValue);
+
+            if (blinkProgress >= blinkDuration) {
+                clearInterval(blinkAnimation);
+                currentVrm.expressionManager.setValue('blink', 0);
+            }
+        }, 1000 / 60); // Run the animation at 60 FPS
+    }
+}
 
 function animate() {
     requestAnimationFrame(animate);
@@ -444,6 +412,10 @@ function animate() {
     }
 
     if (currentVrm) {
+        // Update blink
+        updateBlink(deltaTime);
+
+        // Update VRM
         currentVrm.update(deltaTime);
     }
 
@@ -547,14 +519,18 @@ function initializeVapi() {
 
     vapi.on('call-start', () => {
         console.log('Vapi call started');
+        currentMessage = '';
+        updateTextMesh('Call started...');
     });
 
     vapi.on('call-end', () => {
         console.log('Vapi call ended');
+        updateTextMesh(currentMessage + '\n\nCall ended.');
     });
 
     vapi.on('speech-start', () => {
         console.log('Vapi started speaking');
+        currentMessage = ''; // Remove the 'Assistant: ' prefix
     });
 
     vapi.on('speech-end', () => {
@@ -563,18 +539,90 @@ function initializeVapi() {
 
     vapi.on('message', (message) => {
         console.log('Received message:', message);
-        // You can handle different message types here
+        if (message.type === 'transcript') {
+            if (message.transcriptType === 'partial' || message.transcriptType === 'final') {
+                currentMessage = message.transcript;
+                updateTextMesh(currentMessage);
+                
+                // Update the name display based on the speaker
+                updateVrmNameDisplay(message.role === 'user' ? 'User' : 'Character');
+            }
+        }
+    });
+
+    vapi.on('volume-level', (volume) => {
+        console.log('Volume level:', volume);
+        if (currentVrm) {
+            // Map the volume (0-1) to the 'aa' expression (0-1)
+            currentVrm.expressionManager.setValue('aa', volume);
+        }
     });
 
     vapi.on('error', (error) => {
         console.error('Vapi error:', error);
+        updateTextMesh('Error: ' + error.message);
     });
+}
+
+// Add this function to send system messages to Vapi
+function sendSystemMessageToVapi(content) {
+    if (vapiActive && vapi) {
+        vapi.send({
+            type: "add-message",
+            message: {
+                role: "system",
+                content: content
+            }
+        });
+    }
+}
+
+// Update the socket.onmessage function
+window.addEventListener('load', () => {
+    initializeVapi();
+
+    document.getElementById('toggleVapi').addEventListener('click', toggleVapi);
+
+    const socket = new WebSocket('ws://' + location.host);
+    const clipboardAlert = document.getElementById('clipboardAlert');
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.type === 'clipboard') {
+            clipboardAlert.textContent = 'Clipboard Updated: ' + data.content;
+            clipboardAlert.style.display = 'block';
+            setTimeout(() => {
+                clipboardAlert.style.display = 'none';
+            }, 5000);
+
+            // Send clipboard content to Vapi as a system message
+            const systemMessage = `The user copied this to their clipboard - it could or could not be relevant: ${data.content}`;
+            sendSystemMessageToVapi(systemMessage);
+        }
+    };
+});
+
+let vapiActive = false;
+
+function toggleVapi() {
+    const toggleButton = document.getElementById('toggleVapi');
+    
+    if (vapiActive) {
+        stopVapi();
+        toggleButton.textContent = 'Start Vapi Assistant';
+        vapiActive = false;
+    } else {
+        startVapi();
+        toggleButton.textContent = 'Stop Vapi Assistant';
+        vapiActive = true;
+    }
 }
 
 // Add these functions to start and stop Vapi
 function startVapi() {
     if (vapi) {
         vapi.start(assistantId);
+        updateVrmNameDisplay('Character'); // Reset to Character when starting
     } else {
         console.error('Vapi not initialized');
     }
@@ -588,12 +636,75 @@ function stopVapi() {
     }
 }
 
-// Add this to your existing window.addEventListener('load', ...) function
-window.addEventListener('load', () => {
-    // ... existing code ...
+let textMesh;
+let currentMessage = '';
+const topMargin = 70; // Customize this value to adjust the top margin
 
-    initializeVapi();
+function updateTextMesh(message) {
+  loadFont('Mali', 'fonts/Mali-Medium.ttf').then(() => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    const fontSize = 36;
+    context.font = `${fontSize}px Mali`;
 
-    document.getElementById('startVapi').addEventListener('click', startVapi);
-    document.getElementById('stopVapi').addEventListener('click', stopVapi);
-});
+    const maxWidth = greenRectWidth * 0.9 * 1000;
+    const words = message.split(' ');
+    let lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const testLine = currentLine + ' ' + words[i];
+      const metrics = context.measureText(testLine);
+      const testWidth = metrics.width;
+
+      if (testWidth > maxWidth) {
+        lines.push(currentLine);
+        currentLine = words[i];
+      } else {
+        currentLine = testLine;
+      }
+    }
+    lines.push(currentLine);
+
+    const textCanvas = document.createElement('canvas');
+    const textContext = textCanvas.getContext('2d');
+    textCanvas.width = greenRectWidth * 1000;
+    textCanvas.height = greenRectHeight * 1000;
+
+    textContext.font = `${fontSize}px Mali`;
+    textContext.fillStyle = '#efead7';
+    textContext.textAlign = 'left';
+    textContext.textBaseline = 'top';
+
+    const lineHeight = fontSize * 1.2;
+    const leftPadding = 40; // Add some left padding
+
+    lines.forEach((line, index) => {
+      textContext.fillText(line, leftPadding, topMargin + index * lineHeight);
+    });
+
+    const texture = new THREE.CanvasTexture(textCanvas);
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+
+    if (!textMesh) {
+      const geometry = new THREE.PlaneGeometry(greenRectWidth, greenRectHeight);
+      textMesh = new THREE.Mesh(geometry, material);
+      textMesh.position.set(
+        roundedRect.position.x,
+        roundedRect.position.y,
+        roundedRect.position.z + 0.01
+      );
+      scene.add(textMesh);
+    } else {
+      textMesh.material.map = texture;
+      textMesh.material.needsUpdate = true;
+    }
+  }).catch((error) => {
+    console.error('Error loading font:', error);
+  });
+}
+
+
+updateTextMesh('Waiting for call to start...');
