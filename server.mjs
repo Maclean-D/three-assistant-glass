@@ -40,6 +40,11 @@ app.get('/vapi-web-bundle.min.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'node_modules', '@vapi-ai', 'web', 'dist', 'vapi-web-bundle.min.js'));
 });
 
+// Serve settings.html for the /settings route
+app.get('/settings', (req, res) => {
+  res.sendFile(path.join(__dirname, 'settings.html'));
+});
+
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
@@ -70,5 +75,6 @@ setInterval(() => {
 
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+  console.log(`Settings page available at http://localhost:${port}/settings`); // Added line
   open(`http://localhost:${port}`);
 });
