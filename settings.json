@@ -1,0 +1,12 @@
+{
+  "clipboardAccess": false,
+  "vapiPublicKey": "",
+  "vapiPrivateKey": "",
+  "showTime": false,
+  "freeCamera": false,
+  "sceneDebug": false,
+  "dragDropSupport": false,
+  "vrmDebug": false,
+  "animationPicker": false,
+  "timeFormat": "12"
+}
