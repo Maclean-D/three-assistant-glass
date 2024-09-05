@@ -19,7 +19,7 @@ Plaintext clipboard access
 
 2. Open a terminal and navigate to the project directory.
 
-3. Input your Vapi public key and assistant ID into the main.js file.
+3. Put your Vapi Assistant ID into main.js
 
 4. Install the required dependencies:
    ```
@@ -30,6 +30,7 @@ Plaintext clipboard access
    ```
    node server.mjs
    ```
+6. Click the link to open http://localhost:3000/settings and save your Vapi keys
 
 ## Credits
 
