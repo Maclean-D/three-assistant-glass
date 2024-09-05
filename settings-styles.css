@@ -87,7 +87,13 @@ h1 {
 }
 
 .settings-tab-button.active .settings-tab-icon {
-    filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%);
+    animation: spin 0.5s forwards; /* Spin once */
+}
+
+/* Add spin animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .tab-content {
