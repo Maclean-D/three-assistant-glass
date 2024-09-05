@@ -209,8 +209,10 @@ h1 {
     font-size: 1em;
     margin-left: 10px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .save-button:hover {
     background-color: #1D3C34;
+    transition: filter 0.3s ease;
 }

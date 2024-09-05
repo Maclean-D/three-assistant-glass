@@ -21,10 +21,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color('#efead7');
 
 // camera controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.screenSpacePanning = true;
-controls.target.set(0.0, 1.0, 0.0);
-controls.update();
+let controls;
 
 // light
 const light = new THREE.DirectionalLight(0xffffff, Math.PI);
@@ -48,6 +45,79 @@ let currentSpeaker = 'Character';
 let lastBlinkTime = 0;
 const blinkInterval = 4; // Average time between blinks in seconds
 const blinkDuration = 0.17; // Duration of a blink in seconds
+
+// Add this function to fetch settings
+async function getSettings() {
+  try {
+    const response = await fetch('/api/settings');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching settings:', error);
+    return {};
+  }
+}
+
+// Modify the existing code to use these settings
+async function initializeApp() {
+  const settings = await getSettings();
+
+  // ... existing renderer setup ...
+
+  // Update camera controls based on freeCamera setting
+  if (settings.freeCamera) {
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.screenSpacePanning = true;
+    controls.target.set(0.0, 1.0, 0.0);
+    controls.update();
+  } else {
+    // If freeCamera is false, remove or disable OrbitControls
+    controls = null;
+  }
+
+  // ... rest of the initialization code ...
+
+  // Update drag and drop functionality based on dragDropSupport setting
+  if (settings.dragDropSupport) {
+    window.addEventListener('dragover', function (event) {
+      event.preventDefault();
+    });
+
+    window.addEventListener('drop', function (event) {
+      event.preventDefault();
+
+      const files = event.dataTransfer.files;
+      if (!files) return;
+
+      const file = files[0];
+      if (!file) return;
+
+      const fileType = file.name.split('.').pop().toLowerCase();
+      const blob = new Blob([file], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+
+      if (fileType === 'fbx') {
+        loadFBX(url);
+      } else if (fileType === 'vrm') {
+        currentVrmName = file.name.split('.')[0];
+        loadVRM(url, currentVrmName);
+      }
+    });
+  }
+
+  // Update animation picker visibility based on animationPicker setting
+  const animationSelect = document.getElementById('animationSelect');
+  if (settings.animationPicker) {
+    animationSelect.style.display = 'block';
+    populateAnimationDropdown();
+  } else {
+    animationSelect.style.display = 'none';
+  }
+
+  // ... rest of the initialization code ...
+}
+
+// Call the initializeApp function instead of running the code directly
+initializeApp();
 
 function loadVRM(modelUrl, modelName) {
     const loader = new GLTFLoader();
@@ -402,40 +472,43 @@ function updateBlink(deltaTime) {
     }
 }
 
+// Modify the animate function
 function animate() {
-    requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 
-    const deltaTime = clock.getDelta();
+  const deltaTime = clock.getDelta();
 
-    if (currentMixer) {
-        currentMixer.update(deltaTime);
+  if (currentMixer) {
+    currentMixer.update(deltaTime);
+  }
+
+  if (currentVrm) {
+    updateBlink(deltaTime);
+    currentVrm.update(deltaTime);
+  }
+
+  // Update controls only if freeCamera is enabled
+  if (controls) {
+    controls.update();
+  }
+
+  // Move sparkles
+  sparklesGroup.children.forEach((sparkle) => {
+    sparkle.position.y -= 0.0005; // Even slower vertical movement
+    sparkle.position.x += 0.00025; // Even slower horizontal movement
+
+    // Rotate the sparkle
+    sparkle.rotation.z += 0.002;
+
+    if (sparkle.position.y < -10) {
+      sparkle.position.y = 10;
     }
-
-    if (currentVrm) {
-        // Update blink
-        updateBlink(deltaTime);
-
-        // Update VRM
-        currentVrm.update(deltaTime);
+    if (sparkle.position.x > 10) {
+      sparkle.position.x = -10;
     }
+  });
 
-    // Move sparkles
-    sparklesGroup.children.forEach((sparkle) => {
-        sparkle.position.y -= 0.0005; // Even slower vertical movement
-        sparkle.position.x += 0.00025; // Even slower horizontal movement
-
-        // Rotate the sparkle
-        sparkle.rotation.z += 0.002;
-
-        if (sparkle.position.y < -10) {
-            sparkle.position.y = 10;
-        }
-        if (sparkle.position.x > 10) {
-            sparkle.position.x = -10;
-        }
-    });
-
-    renderer.render(scene, camera);
+  renderer.render(scene, camera);
 }
 
 animate();
@@ -445,33 +518,6 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// Add back the drag and drop functionality
-window.addEventListener('dragover', function (event) {
-    event.preventDefault();
-});
-
-window.addEventListener('drop', function (event) {
-    event.preventDefault();
-
-    const files = event.dataTransfer.files;
-    if (!files) return;
-
-    const file = files[0];
-    if (!file) return;
-
-    const fileType = file.name.split('.').pop().toLowerCase();
-    const blob = new Blob([file], { type: 'application/octet-stream' });
-    const url = URL.createObjectURL(blob);
-
-    if (fileType === 'fbx') {
-        loadFBX(url);
-    } else if (fileType === 'vrm') {
-        // Update currentVrmName with the file name (without extension)
-        currentVrmName = file.name.split('.')[0];
-        loadVRM(url, currentVrmName);
-    }
 });
 
 // Update the populateAnimationDropdown function
