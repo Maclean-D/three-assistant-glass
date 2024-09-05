@@ -36,7 +36,9 @@ const light = new THREE.DirectionalLight(0xffffff, Math.PI);
 light.position.set(1.0, 1.0, 1.0).normalize();
 scene.add(light);
 
-const defaultModelUrl = 'Character.vrm';
+let defaultModelUrl = 'characters/Character.vrm';
+let currentSettings = {};
+
 const greetingAnimationUrl = 'animations/greeting.fbx';
 
 let currentVrm = undefined;
@@ -54,19 +56,17 @@ const blinkInterval = 4; // Average time between blinks in seconds
 const blinkDuration = 0.17; // Duration of a blink in seconds
 
 // Add this function to fetch settings
-async function getSettings() {
-  try {
-    const response = await fetch('/api/settings');
-    currentSettings = await response.json();
-    return currentSettings;
-  } catch (error) {
-    console.error('Error fetching settings:', error);
-    return {};
-  }
+async function fetchSettings() {
+    try {
+        const response = await fetch('/api/settings');
+        currentSettings = await response.json();
+        if (currentSettings.characterName) {
+            defaultModelUrl = `characters/${currentSettings.characterName}.vrm`;
+        }
+    } catch (error) {
+        console.error('Error fetching settings:', error);
+    }
 }
-
-// Add this variable to store the current settings
-let currentSettings = {};
 
 // Add this function to check for settings changes
 function checkSettingsChanges() {
@@ -107,7 +107,8 @@ async function getCurrentIdleAnimation() {
 
 // Modify the existing code to use these settings
 async function initializeApp() {
-  const settings = await getSettings();
+  await fetchSettings();
+  const settings = currentSettings;
 
   // ... existing renderer setup ...
 
@@ -177,7 +178,7 @@ async function initializeApp() {
   setInterval(checkSettingsChanges, 500); // Check every .5 seconds
 
   // Load the default VRM model
-  loadVRM(defaultModelUrl, 'Character');
+  loadVRM(defaultModelUrl, settings.characterName || 'Character');
 }
 
 // Call the initializeApp function instead of running the code directly
@@ -196,6 +197,11 @@ async function loadVRM(modelUrl, modelName) {
             autoUpdateHumanBones: true
         });
     });
+
+    // Ensure the modelUrl starts with 'characters/'
+    if (!modelUrl.startsWith('characters/')) {
+        modelUrl = `characters/${modelUrl}`;
+    }
 
     loader.load(
         modelUrl,

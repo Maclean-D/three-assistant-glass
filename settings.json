@@ -2,7 +2,7 @@
   "clipboardAccess": false,
   "vapiPublicKey": "",
   "vapiPrivateKey": "",
-  "showTime": true,
+  "showTime": false,
   "freeCamera": false,
   "sceneDebug": false,
   "dragDropSupport": false,
