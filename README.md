@@ -2,6 +2,12 @@
 
 Conversational AI character with custom VRM & Vapi assistant support.
 
+## Features
+
+### Expiremental
+
+Plaintext clipboard access
+
 ## Prerequisites
 
 - Node.js (v14 or later recommended)
