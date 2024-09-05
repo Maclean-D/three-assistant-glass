@@ -100,7 +100,7 @@ app.post('/api/settings', express.json(), async (req, res) => {
     const possibleSettings = [
       'clipboardAccess', 'vapiPublicKey', 'vapiPrivateKey',
       'showTime', 'timeFormat', 'freeCamera', 'sceneDebug',
-      'dragDropSupport', 'vrmDebug', 'animationPicker'
+      'dragDropSupport', 'vrmDebug', 'animationPicker', 'idleAnimation'
     ];
 
     possibleSettings.forEach(setting => {

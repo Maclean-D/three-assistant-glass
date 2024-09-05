@@ -7,6 +7,7 @@
   "sceneDebug": false,
   "dragDropSupport": false,
   "vrmDebug": false,
-  "animationPicker": true,
-  "timeFormat": "12"
+  "animationPicker": false,
+  "timeFormat": "12",
+  "idleAnimation": "idleFemale.fbx"
 }
