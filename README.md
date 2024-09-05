@@ -10,7 +10,7 @@ Plaintext clipboard access
 
 ## Prerequisites
 
-- Node.js (v14 or later recommended)
+- Node.js
 - npm (usually comes with Node.js)
 
 ## How to Run
