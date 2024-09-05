@@ -7,12 +7,17 @@ import { WebSocketServer, WebSocket } from 'ws';
 import clipboardy from 'clipboardy';
 import { fileURLToPath } from 'url';
 import { promises as fsPromises } from 'fs';
+import multer from 'multer';
+import AdmZip from 'adm-zip';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 3000;
+
+// Set up multer for file uploads
+const upload = multer({ dest: 'uploads/' });
 
 // Serve static files from the current directory
 app.use(express.static(__dirname));
@@ -138,6 +143,38 @@ app.get('/api/characters', async (req, res) => {
   } catch (err) {
     console.error('Error reading characters directory:', err);
     res.status(500).json({ error: 'Unable to read characters directory' });
+  }
+});
+
+// Add a new route to handle character uploads
+app.post('/api/upload-characters', upload.array('characters'), async (req, res) => {
+  try {
+    for (const file of req.files) {
+      const oldPath = file.path;
+      const fileExtension = path.extname(file.originalname).toLowerCase();
+      
+      if (fileExtension === '.zip') {
+        // Extract zip file
+        const zip = new AdmZip(oldPath);
+        zip.extractAllTo(path.join(__dirname, 'characters'), true);
+      } else if (['.png', '.vrm'].includes(fileExtension)) {
+        // Move png and vrm files
+        const newPath = path.join(__dirname, 'characters', file.originalname);
+        await fs.rename(oldPath, newPath);
+      }
+      
+      // Try to delete the temporary file, but don't throw an error if it fails
+      try {
+        await fs.unlink(oldPath);
+      } catch (unlinkError) {
+        console.warn(`Failed to delete temporary file ${oldPath}:`, unlinkError);
+      }
+    }
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error processing uploaded files:', error);
+    res.status(500).json({ error: 'Failed to process uploaded files' });
   }
 });
 

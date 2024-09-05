@@ -153,6 +153,9 @@
         </div>
     </div>
     
+    <!-- Add this hidden file input element just before the closing </body> tag -->
+    <input type="file" id="characterUpload" style="display: none;" multiple accept=".png,.vrm,.zip">
+
     <script>
         document.querySelectorAll('.settings-tab-button').forEach(button => {
             button.addEventListener('click', () => {
@@ -229,6 +232,7 @@
             const addCard = document.createElement('div');
             addCard.className = 'character-card add-character';
             addCard.innerHTML = '<img src="images/Add_Character_Card.png" alt="Add Character Card">';
+            addCard.addEventListener('click', () => document.getElementById('characterUpload').click());
             grid.appendChild(addCard);
         }
 
@@ -347,6 +351,35 @@
         // Event listener for idle animation select
         document.getElementById('idleAnimationSelect').addEventListener('change', (e) => {
             saveSettings('idleAnimation', e.target.value);
+        });
+
+        // Add this function to handle file uploads
+        async function uploadCharacterFiles(files) {
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('characters', files[i]);
+            }
+
+            try {
+                const response = await fetch('/api/upload-characters', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Upload failed');
+                }
+
+                await loadCharacters(); // Refresh the character display
+            } catch (error) {
+                console.error('Error uploading files:', error);
+                alert('Failed to upload files. Please try again.');
+            }
+        }
+
+        // Add event listener for file input changes
+        document.getElementById('characterUpload').addEventListener('change', (event) => {
+            uploadCharacterFiles(event.target.files);
         });
     </script>
 </body>
