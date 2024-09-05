@@ -178,6 +178,49 @@ h1 {
     transform: scale(1.05);
 }
 
+/* Character Grid */
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: 12px;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 10px; /* Add padding to prevent clipping */
+}
+
+.character-card {
+    position: relative;
+    width: 12rem;
+    transition: transform 0.3s;
+    z-index: 1; /* Ensure cards appear above others when hovered */
+}
+
+.character-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.character-name {
+    position: absolute;
+    bottom: 25px;
+    left: 13px;
+    color: #fbfbf7;
+}
+
+.add-character {
+    cursor: pointer;
+}
+
+.character-card:hover {
+    transform: scale(1.05);
+    z-index: 2; /* Bring hovered card to the front */
+}
+
+/* Ensure horizontal scrolling if needed */
+#characters-tab > div {
+    overflow-x: auto;
+}
 
 /* Key Input */
 
