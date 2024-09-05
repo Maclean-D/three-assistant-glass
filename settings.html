@@ -42,8 +42,21 @@
     </div>
 
     <div id="characters-tab" class="tab-content">
-        <h1>Characters Will Load Here</h1>
-        <!-- Add characters content here -->
+        <div style="display: flex;">
+            <div style="flex: 1; padding: 10px;">
+                <img src="images/Character_Card_Background.png" alt="Character Card" style="width: 12rem; height: auto; margin-right: 12px; margin-bottom: 12px; transition: transform 0.3s;" class="character-card">
+                <img src="images/Character_Card_Background.png" alt="Character Card" style="width: 12rem; height: auto; margin-right: 12px; margin-bottom: 12px; transition: transform 0.3s;" class="character-card">
+                <img src="images/Character_Card_Background.png" alt="Character Card" style="width: 12rem; height: auto; margin-right: 12px; margin-bottom: 12px; transition: transform 0.3s;" class="character-card">
+                <img src="images/Character_Card_Background.png" alt="Character Card" style="width: 12rem; height: auto; margin-right: 12px; margin-bottom: 12px; transition: transform 0.3s;" class="character-card">
+            </div>
+            <div style="flex: 1; padding: 10px;">
+                <h1>
+                    <img src="icons/user-round.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
+                    Character Name
+                </h1>
+                <div style="border-bottom: 4px dashed #4B9560; margin-top: -20px;"></div>
+            </div>
+        </div>
     </div>
 
     <div id="api-keys-tab" class="tab-content">
@@ -51,36 +64,51 @@
             <img src="icons/audio-lines.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
             Vapi
         </h1>
-        <!-- Add API keys content here -->
+        
+        <div class="input-container">
+            <label for="publicKey" style="font-size: 1.2em;">Public Key</label>
+            <div class="input-wrapper">
+                <input type="password" id="publicKey" placeholder="0000XXXX-XXXX-XXXX-XXXX-XXXXXXXX0000" class="rounded-input">
+                <button class="toggle-visibility" data-target="publicKey">
+                    <img src="icons/eye-off.svg" alt="Toggle Visibility" class="input-icon" style="vertical-align: middle;"> <!-- Centered vertically -->
+                </button>
+            </div>
+            <button class="save-button">Save</button>
+        </div>
+        
+        <div class="input-container">
+            <label for="privateKey" style="font-size: 1.2em;">Private Key</label>
+            <div class="input-wrapper">
+                <input type="password" id="privateKey" placeholder="0000XXXX-XXXX-XXXX-XXXX-XXXXXXXX0000" class="rounded-input">
+                <button class="toggle-visibility" data-target="privateKey">
+                    <img src="icons/eye-off.svg" alt="Toggle Visibility" class="input-icon">
+                </button>
+            </div>
+            <button class="save-button">Save</button>
+        </div>
     </div>
-
+    
     <script>
         document.querySelectorAll('.settings-tab-button').forEach(button => {
             button.addEventListener('click', () => {
-                // Remove active class from all buttons, content, and tab items
                 document.querySelectorAll('.settings-tab-button, .tab-content, .settings-tab-item').forEach(el => el.classList.remove('active'));
                 
-                // Add active class to clicked button and its parent tab item
                 button.classList.add('active');
                 button.closest('.settings-tab-item').classList.add('active');
                 
-                // Show corresponding content
                 const tabId = button.getAttribute('data-tab');
                 document.getElementById(tabId).classList.add('active');
             });
         });
 
-        // Add new script for handling the clipboard access toggle
         const clipboardAccessToggle = document.getElementById('clipboardAccessToggle');
 
-        // Fetch initial state
         fetch('/api/settings/clipboard')
             .then(response => response.json())
             .then(data => {
                 clipboardAccessToggle.checked = data.clipboardAccess;
             });
 
-        // Update state when toggled
         clipboardAccessToggle.addEventListener('change', () => {
             fetch('/api/settings/clipboard', {
                 method: 'POST',
@@ -88,6 +116,15 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ clipboardAccess: clipboardAccessToggle.checked }),
+            });
+        });
+
+        document.querySelectorAll('.toggle-visibility').forEach(button => {
+            button.addEventListener('click', () => {
+                const input = document.getElementById(button.getAttribute('data-target'));
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                button.querySelector('img').src = isPassword ? 'icons/eye.svg' : 'icons/eye-off.svg';
             });
         });
     </script>
