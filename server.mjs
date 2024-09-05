@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs/promises';
 import open from 'open';
 import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
@@ -22,17 +22,16 @@ app.get('/', (req, res) => {
 });
 
 // New route to get animation files
-app.get('/animations', (req, res) => {
+app.get('/animations', async (req, res) => {
   const animationsDir = path.join(__dirname, 'animations');
-  fs.readdir(animationsDir, (err, files) => {
-    if (err) {
-      console.error('Error reading animations directory:', err);
-      res.status(500).json({ error: 'Unable to read animations directory' });
-    } else {
-      const fbxFiles = files.filter(file => file.endsWith('.fbx'));
-      res.json(fbxFiles);
-    }
-  });
+  try {
+    const files = await fs.readdir(animationsDir);
+    const fbxFiles = files.filter(file => file.endsWith('.fbx'));
+    res.json(fbxFiles);
+  } catch (err) {
+    console.error('Error reading animations directory:', err);
+    res.status(500).json({ error: 'Unable to read animations directory' });
+  }
 });
 
 // Serve Vapi UMD bundle
@@ -44,11 +43,22 @@ app.get('/vapi-web-bundle.min.js', (req, res) => {
 const settingsPath = path.join(__dirname, 'settings.json');
 let settings = { clipboardAccess: false };
 
-if (fs.existsSync(settingsPath)) {
-  settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-} else {
-  fs.writeFileSync(settingsPath, JSON.stringify(settings));
+async function loadOrCreateSettings() {
+  try {
+    await fs.access(settingsPath);
+    const data = await fs.readFile(settingsPath, 'utf8');
+    settings = JSON.parse(data);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
+    } else {
+      console.error('Error accessing settings file:', error);
+    }
+  }
 }
+
+// Call this function before setting up routes
+await loadOrCreateSettings();
 
 // Modify the /settings route
 app.get('/settings', (req, res) => {
@@ -60,10 +70,44 @@ app.get('/api/settings/clipboard', (req, res) => {
   res.json({ clipboardAccess: settings.clipboardAccess });
 });
 
-app.post('/api/settings/clipboard', express.json(), (req, res) => {
+app.post('/api/settings/clipboard', express.json(), async (req, res) => {
   settings.clipboardAccess = req.body.clipboardAccess;
-  fs.writeFileSync(settingsPath, JSON.stringify(settings));
-  res.json({ success: true });
+  try {
+    await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2));
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error writing settings:', error);
+    res.status(500).json({ error: 'Unable to update settings' });
+  }
+});
+
+// Modify the /api/settings route
+app.get('/api/settings', async (req, res) => {
+  try {
+    const settingsData = await fs.readFile(settingsPath, 'utf8');
+    res.json(JSON.parse(settingsData));
+  } catch (error) {
+    console.error('Error reading settings:', error);
+    res.status(500).json({ error: 'Unable to read settings' });
+  }
+});
+
+app.post('/api/settings', express.json(), async (req, res) => {
+  try {
+    const { clipboardAccess, vapiPublicKey, vapiPrivateKey } = req.body;
+    const currentSettings = { ...settings };
+    
+    if (clipboardAccess !== undefined) currentSettings.clipboardAccess = clipboardAccess;
+    if (vapiPublicKey !== undefined) currentSettings.vapiPublicKey = vapiPublicKey;
+    if (vapiPrivateKey !== undefined) currentSettings.vapiPrivateKey = vapiPrivateKey;
+    
+    await fs.writeFile(settingsPath, JSON.stringify(currentSettings, null, 2));
+    settings = currentSettings;
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating settings:', error);
+    res.status(500).json({ error: 'Unable to update settings' });
+  }
 });
 
 const server = http.createServer(app);
@@ -100,6 +144,6 @@ setInterval(checkClipboard, 1000);
 
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
-  console.log(`Settings page available at http://localhost:${port}/settings`); // Added line
+  console.log(`Settings page available at http://localhost:${port}/settings`);
   open(`http://localhost:${port}`);
 });

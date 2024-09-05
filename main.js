@@ -509,131 +509,143 @@ document.getElementById('animationSelect').addEventListener('change', (event) =>
 });
 
 // Add these lines at the top of your file
-const vapiKey = 'REPLACE ME';
 const assistantId = 'REPLACE ME';
 let vapi;
 
-// Add this function to initialize Vapi
-function initializeVapi() {
-    vapi = new Vapi(vapiKey);
+// Add this function to get the Vapi public key from settings
+async function getVapiPublicKey() {
+  try {
+    const response = await fetch('/api/settings');
+    const settings = await response.json();
+    return settings.vapiPublicKey || '';
+  } catch (error) {
+    console.error('Error fetching Vapi public key:', error);
+    return '';
+  }
+}
 
-    vapi.on('call-start', () => {
-        console.log('Vapi call started');
-        currentMessage = '';
-        updateTextMesh('Call started...');
-    });
+// Update the initializeVapi function
+async function initializeVapi() {
+  const vapiKey = await getVapiPublicKey();
+  vapi = new Vapi(vapiKey);
 
-    vapi.on('call-end', () => {
-        console.log('Vapi call ended');
-        updateTextMesh(currentMessage + '\n\nCall ended.');
-    });
+  vapi.on('call-start', () => {
+    console.log('Vapi call started');
+    currentMessage = '';
+    updateTextMesh('Call started...');
+  });
 
-    vapi.on('speech-start', () => {
-        console.log('Vapi started speaking');
-        currentMessage = ''; // Remove the 'Assistant: ' prefix
-    });
+  vapi.on('call-end', () => {
+    console.log('Vapi call ended');
+    updateTextMesh(currentMessage + '\n\nCall ended.');
+  });
 
-    vapi.on('speech-end', () => {
-        console.log('Vapi stopped speaking');
-    });
+  vapi.on('speech-start', () => {
+    console.log('Vapi started speaking');
+    currentMessage = ''; // Remove the 'Assistant: ' prefix
+  });
 
-    vapi.on('message', (message) => {
-        console.log('Received message:', message);
-        if (message.type === 'transcript') {
-            if (message.transcriptType === 'partial' || message.transcriptType === 'final') {
-                currentMessage = message.transcript;
-                updateTextMesh(currentMessage);
-                
-                // Update the name display based on the speaker
-                updateVrmNameDisplay(message.role === 'user' ? 'User' : 'Character');
-            }
-        }
-    });
+  vapi.on('speech-end', () => {
+    console.log('Vapi stopped speaking');
+  });
 
-    vapi.on('volume-level', (volume) => {
-        console.log('Volume level:', volume);
-        if (currentVrm) {
-            // Map the volume (0-1) to the 'aa' expression (0-1)
-            currentVrm.expressionManager.setValue('aa', volume);
-        }
-    });
+  vapi.on('message', (message) => {
+    console.log('Received message:', message);
+    if (message.type === 'transcript') {
+      if (message.transcriptType === 'partial' || message.transcriptType === 'final') {
+        currentMessage = message.transcript;
+        updateTextMesh(currentMessage);
+        
+        // Update the name display based on the speaker
+        updateVrmNameDisplay(message.role === 'user' ? 'User' : 'Character');
+      }
+    }
+  });
 
-    vapi.on('error', (error) => {
-        console.error('Vapi error:', error);
-        updateTextMesh('Error: ' + error.message);
-    });
+  vapi.on('volume-level', (volume) => {
+    console.log('Volume level:', volume);
+    if (currentVrm) {
+      // Map the volume (0-1) to the 'aa' expression (0-1)
+      currentVrm.expressionManager.setValue('aa', volume);
+    }
+  });
+
+  vapi.on('error', (error) => {
+    console.error('Vapi error:', error);
+    updateTextMesh('Error: ' + error.message);
+  });
 }
 
 // Add this function to send system messages to Vapi
 function sendSystemMessageToVapi(content) {
-    if (vapiActive && vapi) {
-        vapi.send({
-            type: "add-message",
-            message: {
-                role: "system",
-                content: content
-            }
-        });
-    }
+  if (vapiActive && vapi) {
+    vapi.send({
+      type: "add-message",
+      message: {
+        role: "system",
+        content: content
+      }
+    });
+  }
 }
 
 // Update the socket.onmessage function
 window.addEventListener('load', () => {
-    initializeVapi();
+  initializeVapi();
 
-    document.getElementById('toggleVapi').addEventListener('click', toggleVapi);
+  document.getElementById('toggleVapi').addEventListener('click', toggleVapi);
 
-    const socket = new WebSocket('ws://' + location.host);
-    const clipboardAlert = document.getElementById('clipboardAlert');
+  const socket = new WebSocket('ws://' + location.host);
+  const clipboardAlert = document.getElementById('clipboardAlert');
 
-    socket.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        if (data.type === 'clipboard') {
-            clipboardAlert.textContent = '📋 Clipboard Updated: ';
-            clipboardAlert.style.display = 'block';
-            setTimeout(() => {
-                clipboardAlert.style.display = 'none';
-            }, 5000);
+  socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    if (data.type === 'clipboard') {
+      clipboardAlert.textContent = '📋 Clipboard Updated: ';
+      clipboardAlert.style.display = 'block';
+      setTimeout(() => {
+        clipboardAlert.style.display = 'none';
+      }, 5000);
 
-            // Send clipboard content to Vapi as a system message
-            const systemMessage = `The user copied this to their clipboard - it could or could not be relevant: ${data.content}`;
-            sendSystemMessageToVapi(systemMessage);
-        }
-    };
+      // Send clipboard content to Vapi as a system message
+      const systemMessage = `The user copied this to their clipboard - it could or could not be relevant: ${data.content}`;
+      sendSystemMessageToVapi(systemMessage);
+    }
+  };
 });
 
 let vapiActive = false;
 
 function toggleVapi() {
-    const toggleButton = document.getElementById('toggleVapi');
-    
-    if (vapiActive) {
-        stopVapi();
-        toggleButton.textContent = 'Start Vapi Assistant';
-        vapiActive = false;
-    } else {
-        startVapi();
-        toggleButton.textContent = 'Stop Vapi Assistant';
-        vapiActive = true;
-    }
+  const toggleButton = document.getElementById('toggleVapi');
+  
+  if (vapiActive) {
+    stopVapi();
+    toggleButton.textContent = 'Start Vapi Assistant';
+    vapiActive = false;
+  } else {
+    startVapi();
+    toggleButton.textContent = 'Stop Vapi Assistant';
+    vapiActive = true;
+  }
 }
 
 // Add these functions to start and stop Vapi
 function startVapi() {
-    if (vapi) {
-        vapi.start(assistantId);
-        updateVrmNameDisplay('Character'); // Reset to Character when starting
-    } else {
-        console.error('Vapi not initialized');
-    }
+  if (vapi) {
+    vapi.start(assistantId);
+    updateVrmNameDisplay('Character'); // Reset to Character when starting
+  } else {
+    console.error('Vapi not initialized');
+  }
 }
 
 function stopVapi() {
-    if (vapi) {
-        vapi.stop();
-    } else {
-        console.error('Vapi not initialized');
-    }
+  if (vapi) {
+    vapi.stop();
+  } else {
+    console.error('Vapi not initialized');
+  }
 }
 
 let textMesh;

@@ -127,6 +127,40 @@
                 button.querySelector('img').src = isPassword ? 'icons/eye.svg' : 'icons/eye-off.svg';
             });
         });
+
+        // Function to load settings
+        async function loadSettings() {
+            const response = await fetch('/api/settings');
+            const settings = await response.json();
+            clipboardAccessToggle.checked = settings.clipboardAccess;
+            document.getElementById('publicKey').value = settings.vapiPublicKey || '';
+            document.getElementById('privateKey').value = settings.vapiPrivateKey || '';
+        }
+
+        // Function to save settings
+        async function saveSettings(key, value) {
+            await fetch('/api/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ [key]: value }),
+            });
+        }
+
+        // Load settings when the page loads
+        loadSettings();
+
+        clipboardAccessToggle.addEventListener('change', () => {
+            saveSettings('clipboardAccess', clipboardAccessToggle.checked);
+        });
+
+        document.querySelectorAll('.save-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const input = button.previousElementSibling.querySelector('input');
+                saveSettings(input.id === 'publicKey' ? 'vapiPublicKey' : 'vapiPrivateKey', input.value);
+            });
+        });
     </script>
 </body>
 </html>
