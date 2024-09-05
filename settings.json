@@ -1,5 +1,5 @@
 {
-  "clipboardAccess": false,
+  "clipboardAccess": true,
   "vapiPublicKey": "",
   "vapiPrivateKey": "",
   "showTime": false,

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="settings-styles.css">
 </head>
 <body>
-    <div class="settings-tab-container">
+    <div class="settings-tab-container" style="margin-bottom: 15px;">
         <div class="settings-tab-item active">
             <span class="settings-tab-label">Features</span>
             <button class="settings-tab-button active" data-tab="settings-tab">
@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div id="settings-tab" class="tab-content active">
+    <div id="settings-tab" class="tab-content active" style="background-color: #fbfbf7; padding: 10px; border-radius: 15px;">
 
         <h1>
             <img src="icons/info.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
@@ -90,7 +90,7 @@
         
     </div>
 
-    <div id="characters-tab" class="tab-content">
+    <div id="characters-tab" class="tab-content" style="background-color: #fbfbf7; padding: 10px; border-radius: 15px;">
         <div style="display: flex;">
             <div style="flex: 1; padding: 10px;">
                 <img src="images/Character_Card_Background.png" alt="Character Card" style="width: 12rem; height: auto; margin-right: 12px; margin-bottom: 12px; transition: transform 0.3s;" class="character-card">
@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    <div id="api-keys-tab" class="tab-content">
+    <div id="api-keys-tab" class="tab-content" style="background-color: #fbfbf7; padding: 10px; border-radius: 15px;">
         <h1>
             <img src="icons/audio-lines.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
             Vapi
@@ -119,7 +119,7 @@
             <div class="input-wrapper">
                 <input type="password" id="publicKey" placeholder="0000XXXX-XXXX-XXXX-XXXX-XXXXXXXX0000" class="rounded-input">
                 <button class="toggle-visibility" data-target="publicKey">
-                    <img src="icons/eye-off.svg" alt="Toggle Visibility" class="input-icon" style="vertical-align: middle;"> <!-- Centered vertically -->
+                    <img src="icons/eye-off.svg" alt="Toggle Visibility" class="input-icon" style="vertical-align: middle;">
                 </button>
             </div>
             <button class="save-button">Save</button>
