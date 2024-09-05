@@ -38,7 +38,6 @@ scene.add(light);
 
 const defaultModelUrl = 'Character.vrm';
 const greetingAnimationUrl = 'animations/greeting.fbx';
-const idleAnimationUrl = 'animations/idleFemale.fbx';
 
 let currentVrm = undefined;
 let currentAnimationUrl = undefined;
@@ -92,6 +91,18 @@ async function getVrmDebugSetting() {
     console.error('Error fetching vrmDebug setting:', error);
     return false;
   }
+}
+
+// Add this function to get the current idle animation from settings
+async function getCurrentIdleAnimation() {
+    try {
+        const response = await fetch('/api/settings');
+        const settings = await response.json();
+        return settings.idleAnimation ? `animations/${settings.idleAnimation}` : 'animations/idleFemale.fbx';
+    } catch (error) {
+        console.error('Error fetching idle animation from settings:', error);
+        return 'animations/idleFemale.fbx'; // Fallback to default
+    }
 }
 
 // Modify the existing code to use these settings
@@ -164,6 +175,9 @@ async function initializeApp() {
 
   // Set up an interval to check for settings changes
   setInterval(checkSettingsChanges, 500); // Check every .5 seconds
+
+  // Load the default VRM model
+  loadVRM(defaultModelUrl, 'Character');
 }
 
 // Call the initializeApp function instead of running the code directly
@@ -185,7 +199,7 @@ async function loadVRM(modelUrl, modelName) {
 
     loader.load(
         modelUrl,
-        (gltf) => {
+        async (gltf) => {
             const vrm = gltf.userData.vrm;
 
             if (currentVrm) {
@@ -209,6 +223,8 @@ async function loadVRM(modelUrl, modelName) {
             currentVrmName = modelName || 'Unknown';
             updateVrmNameDisplay();
 
+            // Get the current idle animation from settings
+            const idleAnimationUrl = await getCurrentIdleAnimation();
             // Automatically load the idle animation after the VRM is loaded
             loadFBX(idleAnimationUrl);
         },
@@ -216,8 +232,6 @@ async function loadVRM(modelUrl, modelName) {
         (error) => console.error(error),
     );
 }
-
-loadVRM(defaultModelUrl, 'Character');
 
 // mixamo animation
 function loadFBX(animationUrl, playOnce = false) {
@@ -237,7 +251,8 @@ function loadFBX(animationUrl, playOnce = false) {
                 action.play();
 
                 // Switch to idle animation when greeting finishes
-                action.onFinished = () => {
+                action.onFinished = async () => {
+                    const idleAnimationUrl = await getCurrentIdleAnimation();
                     loadFBX(idleAnimationUrl);
                 };
             } else {
