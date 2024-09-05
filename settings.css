@@ -1,17 +1,17 @@
 body {
     font-family: 'Mali', cursive;
-    background-color: #efead7; /* Set background color */
-    background-image: url('icons/settings-background.svg'); /* Set background image */
-    background-repeat: repeat; /* Repeat the image */
-    background-size: 140px 140px; /* Size of each SVG */
-    background-position: 0 0; /* Start position */
-    animation: moveBackground 10s linear infinite; /* Animation for movement */
-    transform-origin: top left; /* Set the origin for rotation */
+    background-color: #efead7;
+    background-image: url('icons/settings-background.svg');
+    background-repeat: repeat;
+    background-size: 140px 140px;
+    background-position: 0 0;
+    animation: moveBackground 10s linear infinite;
+    transform-origin: top left;
 }
 
 @keyframes moveBackground {
     0% { background-position: 0 0; }
-    100% { background-position: 200px 200px; } /* Moves background down and to the right */
+    100% { background-position: 200px 200px; }
 }
 
 h1 {
@@ -185,14 +185,14 @@ h1 {
     gap: 12px;
     max-width: 100%;
     overflow-x: auto;
-    padding: 10px; /* Add padding to prevent clipping */
+    padding: 10px;
 }
 
 .character-card {
     position: relative;
     width: 12rem;
     transition: transform 0.3s;
-    z-index: 1; /* Ensure cards appear above others when hovered */
+    z-index: 1;
 }
 
 .character-card img {
@@ -203,7 +203,7 @@ h1 {
 
 .character-name {
     position: absolute;
-    bottom: 25px;
+    bottom: 15px;
     left: 13px;
     color: #fbfbf7;
 }
@@ -214,10 +214,9 @@ h1 {
 
 .character-card:hover {
     transform: scale(1.05);
-    z-index: 2; /* Bring hovered card to the front */
+    z-index: 2;
 }
 
-/* Ensure horizontal scrolling if needed */
 #characters-tab > div {
     overflow-x: auto;
 }
