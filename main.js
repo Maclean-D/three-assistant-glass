@@ -20,6 +20,14 @@ camera.position.set(0.0, 1.0, 2.73);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#efead7');
 
+// helperRoot
+
+const helperRoot = new THREE.Group();
+
+helperRoot.renderOrder = 10000;
+
+scene.add( helperRoot );
+
 // camera controls
 let controls;
 
@@ -54,6 +62,18 @@ async function getSettings() {
   } catch (error) {
     console.error('Error fetching settings:', error);
     return {};
+  }
+}
+
+// Add this function to get the vrmDebug setting
+async function getVrmDebugSetting() {
+  try {
+    const response = await fetch('/api/settings');
+    const settings = await response.json();
+    return settings.vrmDebug || false;
+  } catch (error) {
+    console.error('Error fetching vrmDebug setting:', error);
+    return false;
   }
 }
 
@@ -119,12 +139,18 @@ async function initializeApp() {
 // Call the initializeApp function instead of running the code directly
 initializeApp();
 
-function loadVRM(modelUrl, modelName) {
+// Modify the loadVRM function
+async function loadVRM(modelUrl, modelName) {
     const loader = new GLTFLoader();
     loader.crossOrigin = 'anonymous';
 
+    const vrmDebug = await getVrmDebugSetting();
+
     loader.register((parser) => {
-        return new VRMLoaderPlugin(parser, { helperRoot: null, autoUpdateHumanBones: true });
+        return new VRMLoaderPlugin(parser, {
+            helperRoot: vrmDebug ? helperRoot : null,
+            autoUpdateHumanBones: true
+        });
     });
 
     loader.load(
