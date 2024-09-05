@@ -84,13 +84,13 @@ h1 {
 
 .settings-tab-button:hover .settings-tab-icon {
     filter: invert(62%) sepia(12%) saturate(114%) hue-rotate(357deg) brightness(92%) contrast(87%);
+    transform: scale(1.05); /* Scale up on hover */
 }
 
 .settings-tab-button.active .settings-tab-icon {
-    animation: spin 0.5s forwards; /* Spin once */
+    animation: spin 0.5s forwards;
 }
 
-/* Add spin animation */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
