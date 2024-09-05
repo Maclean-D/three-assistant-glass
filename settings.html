@@ -98,28 +98,14 @@
     <div id="characters-tab" class="tab-content" style="background-color: #fbfbf7; padding: 10px; border-radius: 15px;">
         <div style="display: flex;">
             <div style="flex: 1; padding: 10px;">
-                <div class="character-grid">
-                    <div class="character-card">
-                        <img src="characters/AvatarSample_A.png" alt="Character Card">
-                        <span class="character-name">AvatarSample_A</span>
-                    </div>
-                    <div class="character-card">
-                        <img src="images/Character_Card_Background.png" alt="Character Card">
-                        <span class="character-name">AvatarSample_B</span>
-                    </div>
-                    <div class="character-card">
-                        <img src="images/Character_Card_Background.png" alt="Character Card">
-                        <span class="character-name">AvatarSample_C</span>
-                    </div>
-                    <div class="character-card add-character">
-                        <img src="images/Add_Character_Card.png" alt="Add Character Card">
-                    </div>
+                <div class="character-grid" id="characterGrid">
+                    <!-- Character cards will be dynamically added here -->
                 </div>
             </div>
             <div style="flex: 1; padding: 10px;">
-                <h1>
+                <h1 id="characterName">
                     <img src="icons/user-round.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
-                    Character Name
+                    Character Name Should Appear Here
                 </h1>
                 <div style="border-bottom: 4px dashed #4B9560; margin-top: -20px; margin-bottom: 20px;"></div>
                 <label class="switch">
@@ -221,6 +207,53 @@
             });
         }
 
+        // Function to load characters
+        async function loadCharacters() {
+            const response = await fetch('/api/characters');
+            const characters = await response.json();
+            const grid = document.getElementById('characterGrid');
+            grid.innerHTML = ''; // Clear existing content
+
+            characters.forEach(character => {
+                const card = document.createElement('div');
+                card.className = 'character-card';
+                card.innerHTML = `
+                    <img src="${character.imagePath}" alt="${character.name}">
+                    <span class="character-name">${character.name}</span>
+                `;
+                card.addEventListener('click', () => selectCharacter(character.name));
+                grid.appendChild(card);
+            });
+
+            // Add the "Add Character" card
+            const addCard = document.createElement('div');
+            addCard.className = 'character-card add-character';
+            addCard.innerHTML = '<img src="images/Add_Character_Card.png" alt="Add Character Card">';
+            grid.appendChild(addCard);
+        }
+
+        // Function to select a character
+        async function selectCharacter(name) {
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ characterName: name }),
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to save character name');
+                }
+                
+                document.getElementById('characterName').textContent = name;
+            } catch (error) {
+                console.error('Error selecting character:', error);
+                alert('Failed to select character. Please try again.');
+            }
+        }
+
         // Function to load settings
         async function loadSettings() {
             const response = await fetch('/api/settings');
@@ -243,6 +276,11 @@
             if (settings.idleAnimation && idleAnimationSelect.querySelector(`option[value="${settings.idleAnimation}"]`)) {
                 idleAnimationSelect.value = settings.idleAnimation;
             }
+
+            // Set the character name
+            if (settings.characterName) {
+                document.getElementById('characterName').textContent = settings.characterName;
+            }
         }
 
         // Function to save settings
@@ -260,6 +298,7 @@
         async function initializePage() {
             await loadAnimations();
             await loadSettings();
+            await loadCharacters();
         }
 
         // Call initializePage when the page loads

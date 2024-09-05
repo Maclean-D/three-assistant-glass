@@ -9,5 +9,6 @@
   "vrmDebug": false,
   "animationPicker": false,
   "timeFormat": "12",
-  "idleAnimation": "idleFemale.fbx"
+  "idleAnimation": "idleFemale.fbx",
+  "characterName": "AvatarSample_A"
 }

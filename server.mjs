@@ -6,6 +6,7 @@ import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import clipboardy from 'clipboardy';
 import { fileURLToPath } from 'url';
+import { promises as fsPromises } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -100,7 +101,8 @@ app.post('/api/settings', express.json(), async (req, res) => {
     const possibleSettings = [
       'clipboardAccess', 'vapiPublicKey', 'vapiPrivateKey',
       'showTime', 'timeFormat', 'freeCamera', 'sceneDebug',
-      'dragDropSupport', 'vrmDebug', 'animationPicker', 'idleAnimation'
+      'dragDropSupport', 'vrmDebug', 'animationPicker', 'idleAnimation',
+      'characterName'  // Add this line
     ];
 
     possibleSettings.forEach(setting => {
@@ -115,6 +117,27 @@ app.post('/api/settings', express.json(), async (req, res) => {
   } catch (error) {
     console.error('Error updating settings:', error);
     res.status(500).json({ error: 'Unable to update settings' });
+  }
+});
+
+// Add a new route to get character information
+app.get('/api/characters', async (req, res) => {
+  const charactersDir = path.join(__dirname, 'characters');
+  try {
+    const files = await fsPromises.readdir(charactersDir);
+    const characters = files
+      .filter(file => file.endsWith('.vrm'))
+      .map(file => {
+        const name = path.parse(file).name;
+        const imagePath = files.includes(`${name}.png`) 
+          ? `/characters/${name}.png` 
+          : '/images/Character_Card_Background.png';
+        return { name, imagePath };
+      });
+    res.json(characters);
+  } catch (err) {
+    console.error('Error reading characters directory:', err);
+    res.status(500).json({ error: 'Unable to read characters directory' });
   }
 });
 
