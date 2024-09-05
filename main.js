@@ -589,7 +589,7 @@ window.addEventListener('load', () => {
     socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
         if (data.type === 'clipboard') {
-            clipboardAlert.textContent = 'Clipboard Updated: ' + data.content;
+            clipboardAlert.textContent = '📋 Clipboard Updated: ';
             clipboardAlert.style.display = 'block';
             setTimeout(() => {
                 clipboardAlert.style.display = 'none';

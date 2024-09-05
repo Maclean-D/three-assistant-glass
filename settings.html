@@ -4,143 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
-    <style>
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-Regular.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-Bold.ttf') format('truetype');
-            font-weight: bold;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-Italic.ttf') format('truetype');
-            font-weight: normal;
-            font-style: italic;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-Bold Italic.ttf') format('truetype');
-            font-weight: bold;
-            font-style: italic;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-Light.ttf') format('truetype');
-            font-weight: 300; /* Light */
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-Light Italic.ttf') format('truetype');
-            font-weight: 300; /* Light */
-            font-style: italic;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-Medium.ttf') format('truetype');
-            font-weight: 500; /* Medium */
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-Medium Italic.ttf') format('truetype');
-            font-weight: 500; /* Medium */
-            font-style: italic;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-SemiBold.ttf') format('truetype');
-            font-weight: 600; /* SemiBold */
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-SemiBold Italic.ttf') format('truetype');
-            font-weight: 600; /* SemiBold */
-            font-style: italic;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-ExtraLight.ttf') format('truetype');
-            font-weight: 200; /* ExtraLight */
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Mali';
-            src: url('./fonts/Mali-ExtraLight Italic.ttf') format('truetype');
-            font-weight: 200; /* ExtraLight */
-            font-style: italic;
-        }
-        body {
-            background-color: #efead7; /* Keep the background color */
-            margin: 0;
-            padding: 20px;
-            font-family: 'Mali', sans-serif; /* Use the Mali font */
-        }
-        h1 {
-            color: #1c532b; /* Keep the heading color */
-            text-align: center; /* Center the heading */
-        }
-        .button {
-            border: none;
-            background: #FBFBF7;
-            border-radius: 50%;
-            width: 62.5px;
-            height: 62.5px;
-            margin: 0 -5px; /* Change this line to create overlap */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: relative; /* Add this line */
-            z-index: 1; /* Add this line */
-        }
-        .button:hover {
-            z-index: 2; /* Add this line */
-        }
-        .button img {
-            filter: brightness(0) saturate(100%) invert(86%) sepia(8%) saturate(242%) hue-rotate(7deg) brightness(90%) contrast(90%);
-            transition: filter 0.3s ease;
-        }
-        .button:hover img:not(.active) {
-            filter: brightness(0) saturate(100%) invert(76%) sepia(8%) saturate(242%) hue-rotate(7deg) brightness(80%) contrast(90%);
-        }
-        .active {
-            filter: brightness(0) saturate(100%) invert(51%) sepia(15%) saturate(1013%) hue-rotate(89deg) brightness(93%) contrast(88%) !important;
-        }
-        .tab-content {
-            display: none;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: -40px;
-        }
-        .tab-content.active {
-            display: block;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="settings-styles.css">
 </head>
 <body>
-    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-        <button class="button" onclick="selectTab('settings')">
-            <img src="./icons/settings.svg" alt="Settings" width="30" height="30" id="settings-icon" class="active">
-        </button>
-        <button class="button" onclick="selectTab('characters')">
-            <img src="./icons/user-round-pen.svg" alt="User Round Pen" width="30" height="30" id="characters-icon">
-        </button>
-        <button class="button" onclick="selectTab('api-keys')">
-            <img src="./icons/key-round.svg" alt="Key Round" width="30" height="30" id="api-keys-icon">
-        </button>
+    <div class="settings-tab-container">
+        <div class="settings-tab-item active">
+            <span class="settings-tab-label">Features</span>
+            <button class="settings-tab-button active" data-tab="settings-tab">
+                <img src="icons/settings.svg" alt="Settings" class="settings-tab-icon">
+            </button>
+        </div>
+        <div class="settings-tab-item">
+            <span class="settings-tab-label">Characters</span>
+            <button class="settings-tab-button" data-tab="characters-tab">
+                <img src="icons/user-round-pen.svg" alt="Characters" class="settings-tab-icon">
+            </button>
+        </div>
+        <div class="settings-tab-item">
+            <span class="settings-tab-label">API Keys</span>
+            <button class="settings-tab-button" data-tab="api-keys-tab">
+                <img src="icons/key-round.svg" alt="API Keys" class="settings-tab-icon">
+            </button>
+        </div>
     </div>
 
     <div id="settings-tab" class="tab-content active">
-        <h1>Feature Settings Will Load Here</h1>
-        <!-- Add feature settings content here -->
+        <h1>
+            <img src="icons/flask-round.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
+            Experimental
+        </h1>
+        <label class="switch">
+            <span>Plaintext Clipboard Access</span>
+            <input type="checkbox" id="clipboardAccessToggle">
+            <span class="slider"></span>
+        </label>
     </div>
 
     <div id="characters-tab" class="tab-content">
@@ -149,24 +47,49 @@
     </div>
 
     <div id="api-keys-tab" class="tab-content">
-        <h1>API Keys Will Load Here</h1>
+        <h1>
+            <img src="icons/audio-lines.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
+            Vapi
+        </h1>
         <!-- Add API keys content here -->
     </div>
 
     <script>
-        function selectTab(selected) {
-            // Reset all icons to default color
-            document.querySelectorAll('.button img').forEach(img => img.classList.remove('active'));
+        document.querySelectorAll('.settings-tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons, content, and tab items
+                document.querySelectorAll('.settings-tab-button, .tab-content, .settings-tab-item').forEach(el => el.classList.remove('active'));
+                
+                // Add active class to clicked button and its parent tab item
+                button.classList.add('active');
+                button.closest('.settings-tab-item').classList.add('active');
+                
+                // Show corresponding content
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
 
-            // Set the selected icon color
-            document.getElementById(`${selected}-icon`).classList.add('active');
+        // Add new script for handling the clipboard access toggle
+        const clipboardAccessToggle = document.getElementById('clipboardAccessToggle');
 
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        // Fetch initial state
+        fetch('/api/settings/clipboard')
+            .then(response => response.json())
+            .then(data => {
+                clipboardAccessToggle.checked = data.clipboardAccess;
+            });
 
-            // Show the selected tab content
-            document.getElementById(`${selected}-tab`).classList.add('active');
-        }
+        // Update state when toggled
+        clipboardAccessToggle.addEventListener('change', () => {
+            fetch('/api/settings/clipboard', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ clipboardAccess: clipboardAccessToggle.checked }),
+            });
+        });
     </script>
 </body>
 </html>

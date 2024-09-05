@@ -40,9 +40,30 @@ app.get('/vapi-web-bundle.min.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'node_modules', '@vapi-ai', 'web', 'dist', 'vapi-web-bundle.min.js'));
 });
 
-// Serve settings.html for the /settings route
+// Load or create settings.json
+const settingsPath = path.join(__dirname, 'settings.json');
+let settings = { clipboardAccess: false };
+
+if (fs.existsSync(settingsPath)) {
+  settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+} else {
+  fs.writeFileSync(settingsPath, JSON.stringify(settings));
+}
+
+// Modify the /settings route
 app.get('/settings', (req, res) => {
   res.sendFile(path.join(__dirname, 'settings.html'));
+});
+
+// Add a new route to get and set the clipboard access setting
+app.get('/api/settings/clipboard', (req, res) => {
+  res.json({ clipboardAccess: settings.clipboardAccess });
+});
+
+app.post('/api/settings/clipboard', express.json(), (req, res) => {
+  settings.clipboardAccess = req.body.clipboardAccess;
+  fs.writeFileSync(settingsPath, JSON.stringify(settings));
+  res.json({ success: true });
 });
 
 const server = http.createServer(app);
@@ -58,20 +79,24 @@ wss.on('connection', (ws) => {
 
 let lastClipboardContent = '';
 
-// Check clipboard every second
-setInterval(() => {
-  clipboardy.read().then(text => {
-    if (text !== lastClipboardContent) {
-      console.log('Clipboard changed:', text);
-      lastClipboardContent = text;
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({ type: 'clipboard', content: text }));
-        }
-      });
-    }
-  }).catch(console.error);
-}, 1000);
+// Modify the clipboard checking interval
+const checkClipboard = () => {
+  if (settings.clipboardAccess) {
+    clipboardy.read().then(text => {
+      if (text !== lastClipboardContent) {
+        console.log('Clipboard changed:', text);
+        lastClipboardContent = text;
+        wss.clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({ type: 'clipboard', content: text }));
+          }
+        });
+      }
+    }).catch(console.error);
+  }
+};
+
+setInterval(checkClipboard, 1000);
 
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
