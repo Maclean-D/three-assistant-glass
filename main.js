@@ -58,11 +58,28 @@ const blinkDuration = 0.17; // Duration of a blink in seconds
 async function getSettings() {
   try {
     const response = await fetch('/api/settings');
-    return await response.json();
+    currentSettings = await response.json();
+    return currentSettings;
   } catch (error) {
     console.error('Error fetching settings:', error);
     return {};
   }
+}
+
+// Add this variable to store the current settings
+let currentSettings = {};
+
+// Add this function to check for settings changes
+function checkSettingsChanges() {
+  fetch('/api/settings')
+    .then(response => response.json())
+    .then(newSettings => {
+      if (JSON.stringify(newSettings) !== JSON.stringify(currentSettings)) {
+        console.log('Settings have changed. Reloading page...');
+        location.reload();
+      }
+    })
+    .catch(error => console.error('Error checking settings:', error));
 }
 
 // Add this function to get the vrmDebug setting
@@ -144,6 +161,9 @@ async function initializeApp() {
   }
 
   // ... rest of the initialization code ...
+
+  // Set up an interval to check for settings changes
+  setInterval(checkSettingsChanges, 500); // Check every .5 seconds
 }
 
 // Call the initializeApp function instead of running the code directly
