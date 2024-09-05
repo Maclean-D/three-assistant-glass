@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
     <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="settings-styles.css">
+    <link rel="stylesheet" href="settings.css">
 </head>
 <body>
     <div class="settings-tab-container" style="margin-bottom: 15px;">
@@ -108,7 +108,19 @@
                     <img src="icons/user-round.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
                     Character Name
                 </h1>
-                <div style="border-bottom: 4px dashed #4B9560; margin-top: -20px;"></div>
+                <div style="border-bottom: 4px dashed #4B9560; margin-top: -20px; margin-bottom: 20px;"></div>
+                <label class="switch">
+                    <span>Assistant</span>
+                    <select id="assistantIDSelect">
+                        <option value="12">Assistant names should load here</option>
+                    </select>
+                </label>
+                <label class="switch">
+                    <span>Idle Animation</span>
+                    <select id="idleAnimationSelect">
+                        <option value="12">Animations should load here</option>
+                    </select>
+                </label>
             </div>
         </div>
     </div>

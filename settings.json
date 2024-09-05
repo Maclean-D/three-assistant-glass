@@ -1,5 +1,5 @@
 {
-  "clipboardAccess": true,
+  "clipboardAccess": false,
   "vapiPublicKey": "",
   "vapiPrivateKey": "",
   "showTime": false,
@@ -7,6 +7,6 @@
   "sceneDebug": false,
   "dragDropSupport": false,
   "vrmDebug": false,
-  "animationPicker": false,
+  "animationPicker": true,
   "timeFormat": "12"
 }
