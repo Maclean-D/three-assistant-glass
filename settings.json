@@ -8,5 +8,5 @@
   "dragDropSupport": false,
   "vrmDebug": false,
   "animationPicker": false,
-  "timeFormat": "12"
+  "timeFormat": "24"
 }
