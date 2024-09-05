@@ -3,10 +3,10 @@
   "vapiPublicKey": "",
   "vapiPrivateKey": "",
   "showTime": false,
-  "freeCamera": true,
+  "freeCamera": false,
   "sceneDebug": false,
   "dragDropSupport": false,
-  "vrmDebug": true,
+  "vrmDebug": false,
   "animationPicker": false,
   "timeFormat": "12"
 }

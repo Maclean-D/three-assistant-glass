@@ -94,6 +94,16 @@ async function initializeApp() {
     controls = null;
   }
 
+  // Add scene debug helpers if sceneDebug is true
+  if (settings.sceneDebug) {
+    // helpers
+    const gridHelper = new THREE.GridHelper(10, 10);
+    scene.add(gridHelper);
+
+    const axesHelper = new THREE.AxesHelper(5);
+    scene.add(axesHelper);
+  }
+
   // ... rest of the initialization code ...
 
   // Update drag and drop functionality based on dragDropSupport setting
