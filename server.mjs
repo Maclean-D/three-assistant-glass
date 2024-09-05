@@ -13,11 +13,16 @@ import AdmZip from 'adm-zip';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Initialize Express app
 const app = express();
 const port = 3000;
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+fs.mkdir(uploadsDir, { recursive: true }).catch(console.error);
+
 // Set up multer for file uploads
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: uploadsDir });
 
 // Serve static files from the current directory
 app.use(express.static(__dirname));
@@ -163,12 +168,7 @@ app.post('/api/upload-characters', upload.array('characters'), async (req, res) 
         await fs.rename(oldPath, newPath);
       }
       
-      // Try to delete the temporary file, but don't throw an error if it fails
-      try {
-        await fs.unlink(oldPath);
-      } catch (unlinkError) {
-        console.warn(`Failed to delete temporary file ${oldPath}:`, unlinkError);
-      }
+      // We're no longer attempting to delete the temporary file
     }
     
     res.json({ success: true });

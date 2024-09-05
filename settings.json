@@ -3,7 +3,7 @@
   "vapiPublicKey": "",
   "vapiPrivateKey": "",
   "showTime": false,
-  "freeCamera": true,
+  "freeCamera": false,
   "sceneDebug": false,
   "dragDropSupport": false,
   "vrmDebug": false,
