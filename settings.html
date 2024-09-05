@@ -30,6 +30,24 @@
     </div>
 
     <div id="settings-tab" class="tab-content active">
+
+        <h1>
+            <img src="icons/info.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
+            Overlay
+        </h1>
+        <label class="switch">
+            <span>Show Time</span>
+            <input type="checkbox" id="showTimeToggle">
+            <span class="slider"></span>
+        </label>
+        <label class="switch">
+            <span>Time Format</span>
+            <select id="timeFormatSelect">
+                <option value="12">12 Hour</option>
+                <option value="24">24 Hour</option>
+            </select>
+        </label>
+
         <h1>
             <img src="icons/flask-round.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
             Experimental
@@ -39,6 +57,37 @@
             <input type="checkbox" id="clipboardAccessToggle">
             <span class="slider"></span>
         </label>
+
+        <h1>
+            <img src="icons/bug.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
+            Debug
+        </h1>
+        <label class="switch">
+            <span>Free Camera</span>
+            <input type="checkbox" id="freeCameraToggle">
+            <span class="slider"></span>
+        </label>
+        <label class="switch">
+            <span>Scene Debug View</span>
+            <input type="checkbox" id="sceneDebugToggle">
+            <span class="slider"></span>
+        </label>
+        <label class="switch">
+            <span>Drag & Drop Support for vrm & fbx</span>
+            <input type="checkbox" id="dragDropToggle">
+            <span class="slider"></span>
+        </label>
+        <label class="switch">
+            <span>vrm Debug View</span>
+                <input type="checkbox" id="vrmDebugToggle">
+            <span class="slider"></span>
+        </label>
+        <label class="switch">
+            <span>Animation Picker</span>
+            <input type="checkbox" id="animationPickerToggle">
+            <span class="slider"></span>
+        </label>
+        
     </div>
 
     <div id="characters-tab" class="tab-content">
@@ -135,6 +184,15 @@
             clipboardAccessToggle.checked = settings.clipboardAccess;
             document.getElementById('publicKey').value = settings.vapiPublicKey || '';
             document.getElementById('privateKey').value = settings.vapiPrivateKey || '';
+            
+            // Load other settings
+            document.getElementById('showTimeToggle').checked = settings.showTime;
+            document.getElementById('timeFormatSelect').value = settings.timeFormat;
+            document.getElementById('freeCameraToggle').checked = settings.freeCamera;
+            document.getElementById('sceneDebugToggle').checked = settings.sceneDebug;
+            document.getElementById('dragDropToggle').checked = settings.dragDropSupport;
+            document.getElementById('vrmDebugToggle').checked = settings.vrmDebug;
+            document.getElementById('animationPickerToggle').checked = settings.animationPicker;
         }
 
         // Function to save settings
@@ -160,6 +218,35 @@
                 const input = button.previousElementSibling.querySelector('input');
                 saveSettings(input.id === 'publicKey' ? 'vapiPublicKey' : 'vapiPrivateKey', input.value);
             });
+        });
+
+        // Event listeners for all toggles and selects
+        document.getElementById('showTimeToggle').addEventListener('change', (e) => {
+            saveSettings('showTime', e.target.checked);
+        });
+
+        document.getElementById('timeFormatSelect').addEventListener('change', (e) => {
+            saveSettings('timeFormat', e.target.value);
+        });
+
+        document.getElementById('freeCameraToggle').addEventListener('change', (e) => {
+            saveSettings('freeCamera', e.target.checked);
+        });
+
+        document.getElementById('sceneDebugToggle').addEventListener('change', (e) => {
+            saveSettings('sceneDebug', e.target.checked);
+        });
+
+        document.getElementById('dragDropToggle').addEventListener('change', (e) => {
+            saveSettings('dragDropSupport', e.target.checked);
+        });
+
+        document.getElementById('vrmDebugToggle').addEventListener('change', (e) => {
+            saveSettings('vrmDebug', e.target.checked);
+        });
+
+        document.getElementById('animationPickerToggle').addEventListener('change', (e) => {
+            saveSettings('animationPicker', e.target.checked);
         });
     </script>
 </body>

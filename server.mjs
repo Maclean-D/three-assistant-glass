@@ -94,12 +94,20 @@ app.get('/api/settings', async (req, res) => {
 
 app.post('/api/settings', express.json(), async (req, res) => {
   try {
-    const { clipboardAccess, vapiPublicKey, vapiPrivateKey } = req.body;
     const currentSettings = { ...settings };
     
-    if (clipboardAccess !== undefined) currentSettings.clipboardAccess = clipboardAccess;
-    if (vapiPublicKey !== undefined) currentSettings.vapiPublicKey = vapiPublicKey;
-    if (vapiPrivateKey !== undefined) currentSettings.vapiPrivateKey = vapiPrivateKey;
+    // Update all possible settings
+    const possibleSettings = [
+      'clipboardAccess', 'vapiPublicKey', 'vapiPrivateKey',
+      'showTime', 'timeFormat', 'freeCamera', 'sceneDebug',
+      'dragDropSupport', 'vrmDebug', 'animationPicker'
+    ];
+
+    possibleSettings.forEach(setting => {
+      if (req.body[setting] !== undefined) {
+        currentSettings[setting] = req.body[setting];
+      }
+    });
     
     await fs.writeFile(settingsPath, JSON.stringify(currentSettings, null, 2));
     settings = currentSettings;
