@@ -115,7 +115,8 @@ async function loadSettings() {
     document.getElementById('dragDropToggle').checked = settings.dragDropSupport;
     document.getElementById('vrmDebugToggle').checked = settings.vrmDebug;
     document.getElementById('animationPickerToggle').checked = settings.animationPicker;
-    
+    document.getElementById('settingsIconToggle').checked = settings.settingsIconToggle; // Add this line
+
     // Set the selected idle animation
     const idleAnimationSelect = document.getElementById('idleAnimationSelect');
     if (settings.idleAnimation && idleAnimationSelect.querySelector(`option[value="${settings.idleAnimation}"]`)) {
@@ -291,4 +292,9 @@ async function uploadCharacterFiles(files) {
 // Add event listener for file input changes
 document.getElementById('characterUpload').addEventListener('change', (event) => {
     uploadCharacterFiles(event.target.files);
+});
+
+// Add this event listener for settingsIconToggle
+document.getElementById('settingsIconToggle').addEventListener('change', (e) => {
+    saveSettings('settingsIconToggle', e.target.checked);
 });
