@@ -1,15 +1,15 @@
 {
+  "timeFormat": "12",
   "clipboardAccess": false,
-  "vapiPublicKey": "",
-  "vapiPrivateKey": "",
   "showTime": false,
   "freeCamera": false,
   "sceneDebug": false,
   "dragDropSupport": false,
   "vrmDebug": false,
   "animationPicker": false,
-  "timeFormat": "12",
-  "idleAnimation": "idleFemale.fbx",
   "characterName": "AvatarSample_A",
-  "assistantID": ""
+  "idleAnimation": "idleFemale.fbx",
+  "assistantID": "",
+  "vapiPublicKey": "",
+  "vapiPrivateKey": ""
 }
