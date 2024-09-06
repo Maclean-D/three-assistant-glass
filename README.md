@@ -106,4 +106,4 @@ Customizeable 3D conversational AI character
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Maclean-D/three-assistant-glass&type=Date)](https://star-history.com/#Maclean-D/three-assistant-glass&D
+[![Star History Chart](https://api.star-history.com/svg?repos=Maclean-D/three-assistant-glass&type=Date)](https://star-history.com/#Maclean-D/three-assistant-glass&Date)
