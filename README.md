@@ -106,6 +106,9 @@ Customizeable 3D conversational AI character
 1. Open the `animations` folder
 2. Drag and drop your .fbx files into the folder
 
+## Troubleshooting
+
+- Try using [Arc](https://arc.net/gift/friend-of-maclean) as your browser
 
 ## Star History
 
