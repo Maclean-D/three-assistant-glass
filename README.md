@@ -32,6 +32,8 @@ Plaintext clipboard access
 
 6. Pick a character model and voice assistant
 
+7. Open http://localhost:3000/settings and click "Start Vapi Assistant"
+
 ## Credits
 
 [Three.js](https://threejs.org/)
