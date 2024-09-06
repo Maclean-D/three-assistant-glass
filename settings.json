@@ -10,5 +10,6 @@
   "animationPicker": false,
   "timeFormat": "12",
   "idleAnimation": "idleFemale.fbx",
-  "characterName": "AvatarSample_A"
+  "characterName": "AvatarSample_A",
+  "assistantID": ""
 }

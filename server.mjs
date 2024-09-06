@@ -112,7 +112,7 @@ app.post('/api/settings', express.json(), async (req, res) => {
       'clipboardAccess', 'vapiPublicKey', 'vapiPrivateKey',
       'showTime', 'timeFormat', 'freeCamera', 'sceneDebug',
       'dragDropSupport', 'vrmDebug', 'animationPicker', 'idleAnimation',
-      'characterName'  // Add this line
+      'characterName', 'assistantID'  // Add assistantID here
     ];
 
     possibleSettings.forEach(setting => {

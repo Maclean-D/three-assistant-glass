@@ -118,15 +118,15 @@
                         Assistant
                     </span>
                     <select id="assistantIDSelect">
-                        <option value="12">Assistant names should load here</option>
+                        <option value="">Loading assistants...</option>
                     </select>
                 </label>
-                <span style="font-size: 1.2em;">
+                <span id="modelName" style="font-size: 1.2em;">
                     <img src="icons/sparkles.svg" alt="Flask Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-bottom: 5px;">
                     [Model Name (i.e. gpt-4o)]
                 </span>
                 <br>
-                <span style="font-size: 1.2em;">
+                <span id="voiceInfo" style="font-size: 1.2em;">
                     <img src="icons/audio-lines.svg" alt="Flask Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-bottom: 5px;">
                     [Voice Provider] ([Voice ID])
                 </span>
@@ -135,14 +135,14 @@
                     <img src="icons/message-circle-code.svg" alt="Flask Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-bottom: 5px;">
                     System Message:
                     <br>
-                    [System Message]
+                    <pre id="systemMessage" style="white-space: pre-wrap; word-wrap: break-word;">[System Message]</pre>
                 </span>
                 <br>
                 <span style="font-size: 1.2em;">
                     <img src="icons/message-circle-more.svg" alt="Flask Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-bottom: 5px;">
                     First Message:
                     <br>
-                    [First Message]
+                    <span id="firstMessage">[First Message]</span>
                 </span>
                 <h1>
                     <img src="icons/person-standing.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
@@ -332,11 +332,75 @@
             });
         }
 
-        // Function to initialize the page
+        // Function to load assistants from Vapi
+        async function loadAssistants() {
+            try {
+                const settings = await fetch('/api/settings').then(res => res.json());
+                const vapiPrivateKey = settings.vapiPrivateKey;
+                
+                if (!vapiPrivateKey) {
+                    console.error('Vapi private key not found in settings');
+                    return;
+                }
+
+                const options = {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${vapiPrivateKey}` }
+                };
+
+                const response = await fetch('https://api.vapi.ai/assistant', options);
+                const assistants = await response.json();
+
+                const select = document.getElementById('assistantIDSelect');
+                select.innerHTML = '<option value="">Select an assistant</option>';
+                assistants.forEach(assistant => {
+                    const option = document.createElement('option');
+                    option.value = assistant.id;
+                    option.textContent = assistant.name;
+                    select.appendChild(option);
+                });
+
+                // Load the selected assistant from settings
+                if (settings.assistantID) {
+                    select.value = settings.assistantID;
+                    updateAssistantInfo(assistants.find(a => a.id === settings.assistantID));
+                }
+            } catch (err) {
+                console.error('Error loading assistants:', err);
+            }
+        }
+
+        // Function to update assistant information
+        function updateAssistantInfo(assistant) {
+            if (!assistant) return;
+
+            document.getElementById('modelName').textContent = assistant.model.model;
+            document.getElementById('voiceInfo').textContent = `${assistant.voice.provider} (${assistant.voice.voiceId})`;
+            document.getElementById('systemMessage').textContent = assistant.model.messages.find(m => m.role === 'system')?.content || 'No system message found';
+            document.getElementById('firstMessage').textContent = assistant.firstMessage || 'No first message found';
+        }
+
+        // Event listener for assistant selection
+        document.getElementById('assistantIDSelect').addEventListener('change', async (e) => {
+            const assistantID = e.target.value;
+            await saveSettings('assistantID', assistantID);
+
+            const options = {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${settings.vapiPrivateKey}` }
+            };
+
+            const response = await fetch(`https://api.vapi.ai/assistant/${assistantID}`, options);
+            const assistant = await response.json();
+            updateAssistantInfo(assistant);
+        });
+
+        // Modify the initializePage function
         async function initializePage() {
             await loadAnimations();
             await loadSettings();
             await loadCharacters();
+            await loadAssistants();
         }
 
         // Call initializePage when the page loads
