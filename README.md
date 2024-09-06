@@ -40,12 +40,12 @@ Customizeable 3D conversational AI character
 
 ## How to Run
 
-1. Clone this repository
+1. Open a terminal and clone this repository
    ```
    git clone https://github.com/Maclean-D/three-assistant-glass.git
    ```
 
-2. Open a terminal and navigate to the project directory.
+2. Navigate to the project directory.
    ```
    cd three-assistant-glass
    ```
