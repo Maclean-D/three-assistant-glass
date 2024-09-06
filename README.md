@@ -96,7 +96,7 @@ Customizeable 3D conversational AI character
 1. Open the `characters` folder
 2. Delete the desired .vrm & .png files
 
-### How do I add idle animations?
+### How do I add custom animations?
 
 1. Open the `animations` folder
 2. Drag and drop your .fbx files into the folder
