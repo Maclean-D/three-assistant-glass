@@ -847,7 +847,7 @@ window.addEventListener('load', () => {
       }, 5000);
 
       // Send clipboard content to Vapi as a system message
-      const systemMessage = `The user copied this to their clipboard - it could or could not be relevant: ${data.content}`;
+      const systemMessage = `User's clipboard updated: ${data.content}`;
       sendSystemMessageToVapi(systemMessage);
     }
   };
