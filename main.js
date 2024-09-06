@@ -632,8 +632,19 @@ document.getElementById('animationSelect').addEventListener('change', (event) =>
 });
 
 // Add these lines at the top of your file
-const assistantId = 'REPLACE ME';
-let vapi;
+let assistantId;
+
+// Add this function to get the assistantID from settings
+async function getAssistantId() {
+  try {
+    const response = await fetch('/api/settings');
+    const settings = await response.json();
+    return settings.assistantID || '';
+  } catch (error) {
+    console.error('Error fetching assistantID:', error);
+    return '';
+  }
+}
 
 // Add this function to get the Vapi public key from settings
 async function getVapiPublicKey() {
@@ -650,6 +661,7 @@ async function getVapiPublicKey() {
 // Update the initializeVapi function
 async function initializeVapi() {
   const vapiKey = await getVapiPublicKey();
+  assistantId = await getAssistantId(); // Get the assistantID from settings
   vapi = new Vapi(vapiKey);
 
   vapi.on('call-start', () => {
@@ -755,11 +767,11 @@ function toggleVapi() {
 
 // Add these functions to start and stop Vapi
 function startVapi() {
-  if (vapi) {
+  if (vapi && assistantId) {
     vapi.start(assistantId);
     updateVrmNameDisplay('Character'); // Reset to Character when starting
   } else {
-    console.error('Vapi not initialized');
+    console.error('Vapi not initialized or assistantID not set');
   }
 }
 
