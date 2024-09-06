@@ -19,18 +19,18 @@ Plaintext clipboard access
 
 2. Open a terminal and navigate to the project directory.
 
-3. Put your Vapi Assistant ID into main.js
-
-4. Install the required dependencies:
+3. Install the required dependencies:
    ```
    npm install
    ```
 
-5. Start the server:
+4. Start the server:
    ```
    node server.mjs
    ```
-6. Open http://localhost:3000/settings and save your Vapi keys
+5. Open http://localhost:3000/settings and save your Vapi keys
+
+6. Pick a character model and voice assistant
 
 ## Credits
 
