@@ -30,7 +30,7 @@ Plaintext clipboard access
    ```
    node server.mjs
    ```
-6. Click the link to open http://localhost:3000/settings and save your Vapi keys
+6. Open http://localhost:3000/settings and save your Vapi keys
 
 ## Credits
 
