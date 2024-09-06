@@ -109,6 +109,16 @@
                 </h1>
                 <div style="border-bottom: 4px dashed #4B9560; margin-top: -20px; margin-bottom: 20px;"></div>
                 <h1>
+                    <img src="icons/person-standing.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
+                    Model
+                </h1>
+                <label class="switch">
+                    <span>Idle Animation</span>
+                    <select id="idleAnimationSelect">
+                        <option value="">Select an animation</option>
+                    </select>
+                </label>
+                <h1>
                     <img src="icons/audio-lines.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
                     Voice Assistant
                 </h1>
@@ -123,37 +133,27 @@
                 </label>
                 <span id="modelName" style="font-size: 1.2em;">
                     <img src="icons/sparkles.svg" alt="Flask Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-bottom: 5px;">
-                    <span class="model-text">[Model Name (i.e. gpt-4o)]</span>
+                    <span class="model-text">Loading Model...</span>
                 </span>
                 <br>
                 <span id="voiceInfo" style="font-size: 1.2em;">
                     <img src="icons/audio-lines.svg" alt="Flask Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-bottom: 5px;">
-                    <span class="voice-text">[Voice Provider] ([Voice ID])</span>
+                    <span class="voice-text">Loading Voice...</span>
                 </span>
                 <br>
                 <span style="font-size: 1.2em;">
                     <img src="icons/message-circle-code.svg" alt="Flask Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-bottom: 5px;">
                     System Message:
                     <br>
-                    <pre id="systemMessage" style="white-space: pre-wrap; word-wrap: break-word;">[System Message]</pre>
+                    <pre id="systemMessage" style="white-space: pre-wrap; word-wrap: break-word;">Loading System Message...</pre>
                 </span>
                 <br>
                 <span style="font-size: 1.2em;">
                     <img src="icons/message-circle-more.svg" alt="Flask Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-bottom: 5px;">
                     First Message:
                     <br>
-                    <span id="firstMessage">[First Message]</span>
+                    <span id="firstMessage">Loading First Message...</span>
                 </span>
-                <h1>
-                    <img src="icons/person-standing.svg" alt="Flask Icon" style="width: 40px; height: 40px; filter: invert(48%) sepia(79%) saturate(376%) hue-rotate(93deg) brightness(88%) contrast(84%); vertical-align: middle; margin-bottom: 5px;">
-                    Animations
-                </h1>
-                <label class="switch">
-                    <span>Idle</span>
-                    <select id="idleAnimationSelect">
-                        <option value="">Select an animation</option>
-                    </select>
-                </label>
             </div>
         </div>
     </div>
