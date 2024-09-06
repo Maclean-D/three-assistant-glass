@@ -28,11 +28,13 @@ Plaintext clipboard access
    ```
    node server.mjs
    ```
-5. Open http://localhost:3000/settings and save your Vapi keys
+5. http://localhost:3000/ should open automatically
 
-6. Pick a character model and voice assistant
+6. Open Settings and save your Vapi keys
 
-7. Open http://localhost:3000/settings and click "Start Vapi Assistant"
+7. Pick a character model and voice assistant
+
+8. Go back to http://localhost:3000/settings and click "Start Vapi Assistant"
 
 ## Credits
 
