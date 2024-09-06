@@ -116,4 +116,6 @@ Customizeable 3D conversational AI character
 
 ## Contributors
 
-[![Contributors](https://contrib.rocks/image?repo=Maclean-D/three-assistant-vrm)](https://github.com/Maclean-D/three-assistant-vrm)
+<a href="https://github.com/Maclean-D/three-assistant-glass/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Maclean-D/three-assistant-glass" />
+</a>
