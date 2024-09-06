@@ -35,6 +35,7 @@ Customizeable 3D conversational AI character
 
 ## Prerequisites
 
+- Desktop operating system (Windows, MacOS, Linux)
 - [Node.js](https://nodejs.org/en)
 - [npm](https://www.npmjs.com/get-npm) (usually comes with Node.js)
 
