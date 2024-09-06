@@ -11,7 +11,7 @@ Customizeable 3D conversational AI character
 - Custom LLM (OpenAI, Anthropic, Groq, etc.)
 - Custom Voice (Cartesia, 11labs, Rime.ai etc.)
 - Knowledge Base (Markdown, PDF, Word, jpeg, etc.)
-- Transcriptions (Deepgram, Talkscriber, Gladia)
+- Live Transcriptions (Deepgram, Talkscriber, Gladia)
 - Emotion Detection
 - Interuptions
 - Background Sound, Filler, & Backchanneling
