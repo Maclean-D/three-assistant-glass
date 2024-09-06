@@ -1,5 +1,7 @@
 # three-assistant-glass
 
+![three-assistant-glass](https://github.com/Maclean-D/three-assistant-glass/raw/main/three-assistant-glass.png)
+
 Customizeable 3D conversational AI character
 
 ## Features
