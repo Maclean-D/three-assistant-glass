@@ -582,7 +582,7 @@ fbxLoader.load('models/gears.fbx', (fbxScene) => {
 
     // Add rotation animation to gears
     function animateGears() {
-        fbxScene.rotation.z += 0.002;
+        fbxScene.rotation.z += -0.002;
         requestAnimationFrame(animateGears);
     }
     animateGears();
