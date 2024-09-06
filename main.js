@@ -106,7 +106,100 @@ async function getCurrentIdleAnimation() {
     }
 }
 
-// Modify the existing code to use these settings
+// Add this function to get the settingsIconToggle setting
+async function getSettingsIconToggle() {
+  try {
+    const response = await fetch('/api/settings');
+    const settings = await response.json();
+    return settings.settingsIconToggle || false;
+  } catch (error) {
+    console.error('Error fetching settingsIconToggle setting:', error);
+    return false;
+  }
+}
+
+// Modify the gears loading part
+async function loadGearsIfEnabled() {
+  const settingsIconToggle = await getSettingsIconToggle();
+  
+  if (settingsIconToggle) {
+    const fbxLoader = new FBXLoader();
+    fbxLoader.load('models/gears.fbx', (fbxScene) => {
+      fbxScene.scale.set(GEARS_SCALE, GEARS_SCALE, GEARS_SCALE);
+      
+      // Position the gears above the dark green rectangle
+      fbxScene.position.set(
+        roundedRect.position.x + greenRectWidth / 2 - 0.63,
+        roundedRect.position.y + greenRectHeight / 2 + GEARS_Y_OFFSET,
+        roundedRect.position.z + GEARS_Z_OFFSET
+      );
+
+      // Apply color to all meshes in the gears model
+      fbxScene.traverse((child) => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshBasicMaterial({ color: GEARS_COLOR });
+          // Add hover effect
+          child.userData.originalColor = GEARS_COLOR; // Store original color
+        }
+      });
+
+      scene.add(fbxScene);
+
+      // Add rotation animation to gears
+      function animateGears() {
+        fbxScene.rotation.z += -0.002;
+        requestAnimationFrame(animateGears);
+      }
+      animateGears();
+
+      // Add hover event listeners
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      function onMouseMove(event) {
+        // Calculate mouse position in normalized device coordinates
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        // Update the raycaster with the camera and mouse position
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(fbxScene.children);
+
+        // Reset colors
+        fbxScene.traverse((child) => {
+          if (child.isMesh) {
+            child.material.color.set(child.userData.originalColor);
+          }
+        });
+
+        // Change color on hover
+        if (intersects.length > 0) {
+          intersects[0].object.material.color.set(HOVER_COLOR);
+        }
+      }
+
+      window.addEventListener('mousemove', onMouseMove, false);
+
+      // Add click event listener
+      window.addEventListener('click', (event) => {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(fbxScene.children);
+
+        if (intersects.length > 0) {
+          // Open URL in a small popup window
+          window.open('http://localhost:3000/settings', 'popupWindow', 'width=950,height=908,scrollbars=yes,resizable=yes'); // Adjust width and height as needed
+        }
+      });
+    }, undefined, (error) => {
+      console.error('Error loading gears model:', error);
+    });
+  }
+}
+
+// Call loadGearsIfEnabled in the initializeApp function
 async function initializeApp() {
   await fetchSettings();
   const settings = currentSettings;
@@ -177,6 +270,9 @@ async function initializeApp() {
 
   // Set up an interval to check for settings changes
   setInterval(checkSettingsChanges, 500); // Check every .5 seconds
+
+  // Load gears if enabled
+  await loadGearsIfEnabled();
 
   // Load the default VRM model
   loadVRM(defaultModelUrl, settings.characterName || 'Character');
@@ -556,81 +652,6 @@ const GEARS_Y_OFFSET = 0.83;
 const GEARS_Z_OFFSET = 0.05;
 const GEARS_COLOR = 0x4b9560;
 const HOVER_COLOR = 0x1d3c34; // New hover color
-
-// Load and add gears model
-const fbxLoader = new FBXLoader();
-fbxLoader.load('models/gears.fbx', (fbxScene) => {
-    fbxScene.scale.set(GEARS_SCALE, GEARS_SCALE, GEARS_SCALE);
-    
-    // Position the gears above the dark green rectangle
-    fbxScene.position.set(
-        roundedRect.position.x + greenRectWidth / 2 - 0.63,
-        roundedRect.position.y + greenRectHeight / 2 + GEARS_Y_OFFSET,
-        roundedRect.position.z + GEARS_Z_OFFSET
-    );
-
-    // Apply color to all meshes in the gears model
-    fbxScene.traverse((child) => {
-        if (child.isMesh) {
-            child.material = new THREE.MeshBasicMaterial({ color: GEARS_COLOR });
-            // Add hover effect
-            child.userData.originalColor = GEARS_COLOR; // Store original color
-        }
-    });
-
-    scene.add(fbxScene);
-
-    // Add rotation animation to gears
-    function animateGears() {
-        fbxScene.rotation.z += -0.002;
-        requestAnimationFrame(animateGears);
-    }
-    animateGears();
-
-    // Add hover event listeners
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
-    function onMouseMove(event) {
-        // Calculate mouse position in normalized device coordinates
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        // Update the raycaster with the camera and mouse position
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(fbxScene.children);
-
-        // Reset colors
-        fbxScene.traverse((child) => {
-            if (child.isMesh) {
-                child.material.color.set(child.userData.originalColor);
-            }
-        });
-
-        // Change color on hover
-        if (intersects.length > 0) {
-            intersects[0].object.material.color.set(HOVER_COLOR);
-        }
-    }
-
-    window.addEventListener('mousemove', onMouseMove, false);
-
-    // Add click event listener
-    window.addEventListener('click', (event) => {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(fbxScene.children);
-
-        if (intersects.length > 0) {
-            // Open URL in a small popup window
-            window.open('http://localhost:3000/settings', 'popupWindow', 'width=950,height=908,scrollbars=yes,resizable=yes'); // Adjust width and height as needed
-        }
-    });
-}, undefined, (error) => {
-    console.error('Error loading gears model:', error);
-});
 
 // Modify the animate function
 function animate() {
