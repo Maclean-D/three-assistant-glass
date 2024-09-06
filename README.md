@@ -1,23 +1,54 @@
 # three-assistant-glass
 
-Conversational AI character with custom VRM & Vapi assistant support.
+Customizeable 3D conversational AI character
 
 ## Features
 
+### Voice Assistant - [Vapi](https://vapi.ai/)
+
+- Custom LLM (OpenAI, Anthropic, Groq, etc.)
+- Custom Voice (Cartesia, 11labs, Rime.ai etc.)
+- Knowledge Base (Markdown, PDF, Word, jpeg, etc.)
+- Transcriptions (Deepgram, Talkscriber, Gladia)
+- Emotion Detection
+- Interuptions
+- Background Sound, Filler, & Backchanneling
+- Function Calling
+- Audio Recording
+
+### Character - [three-vrm](https://github.com/pixiv/three-vrm)
+
+- Custom 3D model ([vrm](https://hub.vroid.com/en))
+- Custom animations (fbx)
+- Animated to voice assistant's voice
+
 ### Expiremental
 
-Plaintext clipboard access
+- Plaintext clipboard access
+
+### Planned
+
+- Show current time
+- WebXR for [Looking Glass Go](https://lookingglassfactory.com/looking-glass-go)
+- Access to [Ask Limitless](https://feedback.limitless.ai/roadmap/ask-ai-anything) via [Selenium](https://www.selenium.dev/) upon public release
+- [01](https://github.com/OpenInterpreter/01) as a voice assistant option upon a stable 1.0 release
 
 ## Prerequisites
 
-- Node.js
-- npm (usually comes with Node.js)
+- [Node.js](https://nodejs.org/en)
+- [npm](https://www.npmjs.com/get-npm) (usually comes with Node.js)
 
 ## How to Run
 
-1. Clone this repository or download the source code.
+1. Clone this repository
+   ```
+   git clone https://github.com/Maclean-D/three-assistant-glass.git
+   ```
 
 2. Open a terminal and navigate to the project directory.
+   ```
+   cd three-assistant-glass
+   ```
 
 3. Install the required dependencies:
    ```
@@ -30,20 +61,41 @@ Plaintext clipboard access
    ```
 5. http://localhost:3000/ should open automatically
 
-6. Open Settings and save your Vapi keys
+6. Open Settings and save your [Vapi keys](https://dashboard.vapi.ai/org/api-keys)
 
-7. Pick a character model and voice assistant
+7. Pick a character model and voice assistant ([Create an assistant on Vapi first](https://dashboard.vapi.ai/assistants) if you haven't already)
 
 8. Go back to http://localhost:3000/settings and click ▶️
 
-## Credits
+## FAQ
 
-[Three.js](https://threejs.org/)
+### How do I add a new character model?
 
-[three-vrm](https://github.com/pixiv/three-vrm)
+1. Download a .vrm file, ([VRoid Hub](https://hub.vroid.com/en) has lots of models or make your own in [VRoid Studio](https://vroid.com/en/studio))
+2. From the characters tab in settings, click the `+` button and select the .vrm or .zip file
+3. Click the model to set it as the active model
 
-[AvatarSample_A by VRoid Project](https://hub.vroid.com/en/characters/2843975675147313744/models/5644550979324015604)  
+### How do I change the character's card in settings?
 
-[Vapi](https://vapi.ai/)
+1. Prepare a 270x480 .png file that has the same name as your vrm file
+2. From the characters tab in settings, click the `+` button and select the .png file
 
-[Vapi-Web-UMD](https://github.com/balacodeio/Vapi-Web-UMD)
+### Can I bundle character models and cards?
+
+1. Zip the character's .vrm & .png files together (make sure they have the same name)
+2. From the characters tab in settings, click the `+` button and select the .zip file
+
+### How do I change a character's name?
+
+1. Open the `characters` folder
+2. Rename the .vrm & .png files (make sure they have the same name)
+
+### How do I delete characters?
+
+1. Open the `characters` folder
+2. Delete the desired .vrm & .png files
+
+### How do I add idle animations?
+
+1. Open the `animations` folder
+2. Drag and drop your .fbx files into the folder
