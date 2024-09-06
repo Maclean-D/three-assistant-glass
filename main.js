@@ -56,6 +56,8 @@ let lastBlinkTime = 0;
 const blinkInterval = 4; // Average time between blinks in seconds
 const blinkDuration = 0.17; // Duration of a blink in seconds
 
+let vapi; // Declare vapi at the top level
+
 // Add this function to fetch settings
 async function fetchSettings() {
     try {
@@ -765,7 +767,13 @@ async function getVapiPublicKey() {
 // Update the initializeVapi function
 async function initializeVapi() {
   const vapiKey = await getVapiPublicKey();
-  assistantId = await getAssistantId(); // Get the assistantID from settings
+  assistantId = await getAssistantId(); 
+
+  if (!vapiKey) {
+    console.error('Vapi public key not found in settings');
+    return;
+  }
+
   vapi = new Vapi(vapiKey);
 
   vapi.on('call-start', () => {
