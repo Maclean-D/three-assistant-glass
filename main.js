@@ -839,11 +839,11 @@ function toggleVapi() {
   
   if (vapiActive) {
     stopVapi();
-    toggleButton.textContent = 'Start Assistant';
+    toggleButton.textContent = '▶️';
     vapiActive = false;
   } else {
     startVapi();
-    toggleButton.textContent = 'Stop Assistant';
+    toggleButton.textContent = '🛑';
     vapiActive = true;
   }
 }
