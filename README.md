@@ -75,6 +75,14 @@ Customizable 3D conversational AI character
 
 8. Go back to http://localhost:3000/settings and click ▶️
 
+## How to view on a Looking Glass device
+
+1. Install [Looking Glass Bridge](https://lookingglassfactory.com/software/looking-glass-bridge)
+
+2. Plug in your Looking Glass Device
+
+3. Click `Enter Looking Glass`
+
 ## FAQ
 
 ### How do I add a new character model?
