@@ -992,7 +992,7 @@ new LookingGlassWebXRPolyfill()
 document.body.append(VRButton.createButton(renderer));
 
 function StartXRSession() {
-    // Remove settings gears for display
+    // Reposition UI for clear viewing in Looking Glass
     uiRoot.position.x = 0.8
     uiRoot.position.z = 0.5
 }
