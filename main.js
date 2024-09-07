@@ -848,7 +848,11 @@ window.addEventListener('load', () => {
   initializeVapi();
 
   document.getElementById('toggleVapi').addEventListener('click', toggleVapi);
-
+  document.addEventListener('keydown', (e) => {
+      if(e.key === "MediaPlayPause") {
+          toggleVapi()
+      }
+  });
   const socket = new WebSocket('ws://' + location.host);
   const clipboardAlert = document.getElementById('clipboardAlert');
 
