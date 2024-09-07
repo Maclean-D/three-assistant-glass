@@ -5,6 +5,8 @@ import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { loadMixamoAnimation } from './loadMixamoAnimation.js';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { LookingGlassWebXRPolyfill, LookingGlassConfig } from "@lookingglass/webxr"
+import { VRButton } from "three/addons/webxr/VRButton.js";
 
 // Set up renderer to use full screen
 const renderer = new THREE.WebGLRenderer();
@@ -121,23 +123,25 @@ async function getSettingsIconToggle() {
 }
 
 // Modify the gears loading part
+var gearsScene = undefined;
 async function loadGearsIfEnabled() {
   const settingsIconToggle = await getSettingsIconToggle();
   
   if (settingsIconToggle) {
     const fbxLoader = new FBXLoader();
     fbxLoader.load('models/gears.fbx', (fbxScene) => {
-      fbxScene.scale.set(GEARS_SCALE, GEARS_SCALE, GEARS_SCALE);
+        gearsScene = fbxScene;
+        gearsScene.scale.set(GEARS_SCALE, GEARS_SCALE, GEARS_SCALE);
       
       // Position the gears above the dark green rectangle
-      fbxScene.position.set(
+        gearsScene.position.set(
         roundedRect.position.x + greenRectWidth / 2 - 0.63,
         roundedRect.position.y + greenRectHeight / 2 + GEARS_Y_OFFSET,
         roundedRect.position.z + GEARS_Z_OFFSET
       );
 
       // Apply color to all meshes in the gears model
-      fbxScene.traverse((child) => {
+        gearsScene.traverse((child) => {
         if (child.isMesh) {
           child.material = new THREE.MeshBasicMaterial({ color: GEARS_COLOR });
           // Add hover effect
@@ -145,7 +149,7 @@ async function loadGearsIfEnabled() {
         }
       });
 
-      scene.add(fbxScene);
+      scene.add(gearsScene);
 
       // Add rotation animation to gears
       function animateGears() {
@@ -965,5 +969,33 @@ function updateTextMesh(message) {
   });
 }
 
+// Add WebXR for Looking Glass Functions
+renderer.xr.enabled = true
+
+// Configure looking glass settings
+const config = LookingGlassConfig
+config.targetY = 1
+config.targetZ = 0
+config.targetDiam = 1.5
+config.depthiness = 0.78
+config.fovy = (40 * Math.PI) / 180
+new LookingGlassWebXRPolyfill()
+
+// Add Start Session Button
+document.body.append(VRButton.createButton(renderer));
+
+function StartXRSession() {
+    // Remove settings gears for display
+    scene.remove(gearsScene);
+}
+
+function EndXRSession() {
+    // Reload page on XR Session end to fix view
+    console.log('XR Session Ended. Reloading page...');
+    location.reload();
+}
+
+renderer.xr.addEventListener('sessionstart', StartXRSession)
+renderer.xr.addEventListener("sessionend", EndXRSession)
 
 updateTextMesh('Waiting for call to start...');
