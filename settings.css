@@ -276,3 +276,14 @@ h1 {
     background-color: #1D3C34;
     transition: filter 0.3s ease;
 }
+
+#assistantShortcut {
+    margin-left: 10px;
+    padding: 5px;
+    width: 150px;
+    font-family: 'Mali', cursive;
+    border: 1px solid #4B9560;
+    border-radius: 5px;
+    background-color: #fbfbf7;
+    color: #1d3c34;
+}

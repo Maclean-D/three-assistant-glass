@@ -844,15 +844,22 @@ function sendSystemMessageToVapi(content) {
 }
 
 // Update the socket.onmessage function
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   initializeVapi();
 
   document.getElementById('toggleVapi').addEventListener('click', toggleVapi);
+
+  // Fetch the assistantShortcut from settings
+  const response = await fetch('/api/settings');
+  const settings = await response.json();
+  const assistantShortcut = settings.assistantShortcut;
+
   document.addEventListener('keydown', (e) => {
-      if(e.key === "MediaPlayPause") {
-          toggleVapi()
-      }
+    if (e.key === assistantShortcut) {
+      toggleVapi();
+    }
   });
+
   const socket = new WebSocket('ws://' + location.host);
   const clipboardAlert = document.getElementById('clipboardAlert');
 

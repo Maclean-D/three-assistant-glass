@@ -1,6 +1,7 @@
 {
   "settingsIconToggle": true,
   "timeFormat": "12",
+  "assistantShortcut": "MediaPlayPause",
   "clipboardAccess": false,
   "showTime": false,
   "freeCamera": false,

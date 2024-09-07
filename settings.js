@@ -127,6 +127,10 @@ async function loadSettings() {
     if (settings.characterName) {
         document.getElementById('characterName').textContent = settings.characterName;
     }
+
+    // Load the assistant shortcut
+    const shortcutInput = document.getElementById('assistantShortcut');
+    shortcutInput.value = settings.assistantShortcut || '';
 }
 
 // Function to save settings
@@ -297,4 +301,28 @@ document.getElementById('characterUpload').addEventListener('change', (event) =>
 // Add this event listener for settingsIconToggle
 document.getElementById('settingsIconToggle').addEventListener('change', (e) => {
     saveSettings('settingsIconToggle', e.target.checked);
+});
+
+// Add this new function to handle keyboard shortcut input
+function handleShortcutInput(event) {
+    event.preventDefault();
+    const shortcutInput = document.getElementById('assistantShortcut');
+    
+    const key = event.key;
+    const ctrl = event.ctrlKey ? 'Ctrl+' : '';
+    const alt = event.altKey ? 'Alt+' : '';
+    const shift = event.shiftKey ? 'Shift+' : '';
+    
+    if (key === 'Control' || key === 'Alt' || key === 'Shift') return;
+    
+    const shortcut = `${ctrl}${alt}${shift}${key}`;
+    shortcutInput.value = shortcut;
+    
+    saveSettings('assistantShortcut', shortcut);
+}
+
+// Add event listeners after the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    const shortcutInput = document.getElementById('assistantShortcut');
+    shortcutInput.addEventListener('keydown', handleShortcutInput);
 });
