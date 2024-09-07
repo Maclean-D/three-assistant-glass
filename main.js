@@ -5,6 +5,8 @@ import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { loadMixamoAnimation } from './loadMixamoAnimation.js';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { LookingGlassWebXRPolyfill, LookingGlassConfig } from "@lookingglass/webxr"
+import { VRButton } from "three/addons/webxr/VRButton.js";
 
 // Set up renderer to use full screen
 const renderer = new THREE.WebGLRenderer();
@@ -20,7 +22,7 @@ camera.position.set(0.0, 1.0, 2.73);
 // scene
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#efead7');
-
+scene.add(camera)
 // helperRoot
 
 const helperRoot = new THREE.Group();
@@ -28,6 +30,11 @@ const helperRoot = new THREE.Group();
 helperRoot.renderOrder = 10000;
 
 scene.add( helperRoot );
+
+// UI Root
+const uiRoot = new THREE.Group();
+uiRoot.renderOrder = 99999;
+camera.add( uiRoot );
 
 // camera controls
 let controls;
@@ -39,8 +46,6 @@ scene.add(light);
 
 let defaultModelUrl = 'characters/Character.vrm';
 let currentSettings = {};
-
-const greetingAnimationUrl = 'animations/greeting.fbx';
 
 let currentVrm = undefined;
 let currentAnimationUrl = undefined;
@@ -127,25 +132,25 @@ async function loadGearsIfEnabled() {
   if (settingsIconToggle) {
     const fbxLoader = new FBXLoader();
     fbxLoader.load('models/gears.fbx', (fbxScene) => {
-      fbxScene.scale.set(GEARS_SCALE, GEARS_SCALE, GEARS_SCALE);
+        fbxScene.scale.set(GEARS_SCALE, GEARS_SCALE, GEARS_SCALE);
       
       // Position the gears above the dark green rectangle
-      fbxScene.position.set(
+        fbxScene.position.set(
         roundedRect.position.x + greenRectWidth / 2 - 0.63,
         roundedRect.position.y + greenRectHeight / 2 + GEARS_Y_OFFSET,
         roundedRect.position.z + GEARS_Z_OFFSET
       );
 
       // Apply color to all meshes in the gears model
-      fbxScene.traverse((child) => {
+        fbxScene.traverse((child) => {
         if (child.isMesh) {
-          child.material = new THREE.MeshBasicMaterial({ color: GEARS_COLOR });
+          child.material = new THREE.MeshBasicMaterial({ color: GEARS_COLOR, depthTest: false });
           // Add hover effect
           child.userData.originalColor = GEARS_COLOR; // Store original color
         }
       });
 
-      scene.add(fbxScene);
+    uiRoot.add(fbxScene);
 
       // Add rotation animation to gears
       function animateGears() {
@@ -313,6 +318,7 @@ async function loadVRM(modelUrl, modelName) {
             }
 
             currentVrm = vrm;
+            //currentVrm.renderOrder = 10;
             scene.add(vrm.scene);
 
             // Rotate the VRM model 180 degrees around the Y-axis
@@ -388,7 +394,8 @@ function updateAnimationDropdown() {
 
 // Create a group to hold all the sparkles
 const sparklesGroup = new THREE.Group();
-scene.add(sparklesGroup);
+sparklesGroup.renderOrder = -1
+uiRoot.add(sparklesGroup);
 
 // Load the SVG
 const loader = new SVGLoader();
@@ -410,7 +417,7 @@ loader.load('icons/sparkles.svg', (data) => {
                 const material = new THREE.MeshBasicMaterial({
                     color: sparkleColor,
                     side: THREE.DoubleSide,
-                    transparent: true,
+                    transparent: false,
                     opacity: 0.5, // Reduced opacity
                     depthWrite: false
                 });
@@ -425,8 +432,8 @@ loader.load('icons/sparkles.svg', (data) => {
             
             sparkleGroup.scale.set(sparkleSize, sparkleSize, sparkleSize);
             sparkleGroup.position.set(
-                (j - cols / 2) * 1, // Increased spacing
-                (i - rows / 2) * 1, // Increased spacing
+                (j - cols / 2), // Increased spacing
+                (i - rows / 2), // Increased spacing
                 wallDepth + Math.random() * 2 - 1 // Add some depth variation
             );
             
@@ -525,11 +532,12 @@ roundedCorners.quadraticCurveTo(-greenRectWidth / 2, -greenRectHeight / 2, -gree
 const roundedRectGeometry = new THREE.ShapeGeometry(roundedCorners);
 const roundedRectMaterial = new THREE.MeshBasicMaterial({ 
     color: 0x1d3c34,
-    side: THREE.DoubleSide
+    side: THREE.DoubleSide,
+    depthTest: false
 });
 const roundedRect = new THREE.Mesh(roundedRectGeometry, roundedRectMaterial);
-roundedRect.position.set(0, outlineHeight / 2 + -0.18, 0.25); // Kept at the same vertical position as the outline
-scene.add(roundedRect);
+roundedRect.position.set(0, -0.45, -2.5);
+uiRoot.add(roundedRect);
 
 // Replace the loadFont function with this:
 function loadFont(fontFamily, fontPath) {
@@ -538,7 +546,7 @@ function loadFont(fontFamily, fontPath) {
     font.load().then((loadedFont) => {
       document.fonts.add(loadedFont);
       resolve();
-    }).catch((error) => {
+    }).catch(() => {
       reject(new Error(`Failed to load font: ${fontFamily}`));
     });
   });
@@ -549,7 +557,7 @@ function updateVrmNameDisplay(speaker = currentSpeaker) {
   currentSpeaker = speaker;
   loadFont('Mali', 'fonts/Mali-Medium.ttf').then(() => {
     if (vrmNameMesh) {
-      scene.remove(vrmNameMesh);
+      uiRoot.remove(vrmNameMesh);
     }
 
     const canvas = document.createElement('canvas');
@@ -596,7 +604,7 @@ function updateVrmNameDisplay(speaker = currentSpeaker) {
     texture.magFilter = THREE.LinearFilter;
 
     // Use MeshBasicMaterial to ignore lighting
-    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthTest: false });
     const geometry = new THREE.PlaneGeometry(canvas.width / (700 * scaleFactor), canvas.height / (700 * scaleFactor));
 
     vrmNameMesh = new THREE.Mesh(geometry, material);
@@ -604,11 +612,10 @@ function updateVrmNameDisplay(speaker = currentSpeaker) {
     // Position the name box above the dark green box
     vrmNameMesh.position.set(
       roundedRect.position.x - greenRectWidth / 2 + (canvas.width / (1400 * scaleFactor)) + 0.05,
-      roundedRect.position.y + greenRectHeight / 2 + 0,
+      roundedRect.position.y + greenRectHeight / 2,
       roundedRect.position.z + 0.02
     );
-
-    scene.add(vrmNameMesh);
+    uiRoot.add(vrmNameMesh);
   }).catch((error) => {
     console.error('Error loading font:', error);
   });
@@ -841,7 +848,11 @@ window.addEventListener('load', () => {
   initializeVapi();
 
   document.getElementById('toggleVapi').addEventListener('click', toggleVapi);
-
+  document.addEventListener('keydown', (e) => {
+      if(e.key === "MediaPlayPause") {
+          toggleVapi()
+      }
+  });
   const socket = new WebSocket('ws://' + location.host);
   const clipboardAlert = document.getElementById('clipboardAlert');
 
@@ -945,7 +956,7 @@ function updateTextMesh(message) {
     const texture = new THREE.CanvasTexture(textCanvas);
     texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
-    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthTest: false });
 
     if (!textMesh) {
       const geometry = new THREE.PlaneGeometry(greenRectWidth, greenRectHeight);
@@ -955,7 +966,7 @@ function updateTextMesh(message) {
         roundedRect.position.y,
         roundedRect.position.z + 0.01
       );
-      scene.add(textMesh);
+      uiRoot.add(textMesh);
     } else {
       textMesh.material.map = texture;
       textMesh.material.needsUpdate = true;
@@ -965,5 +976,34 @@ function updateTextMesh(message) {
   });
 }
 
+// Add WebXR for Looking Glass Functions
+renderer.xr.enabled = true
+
+// Configure looking glass settings
+const config = LookingGlassConfig
+config.targetY = 1
+config.targetZ = 0
+config.targetDiam = 1.5
+config.depthiness = 0.78
+config.fovy = (40 * Math.PI) / 180
+new LookingGlassWebXRPolyfill()
+
+// Add Start Session Button
+document.body.append(VRButton.createButton(renderer));
+
+function StartXRSession() {
+    // Reposition UI for clear viewing in Looking Glass
+    uiRoot.position.x = 0.8
+    uiRoot.position.z = 0.5
+}
+
+function EndXRSession() {
+    // Reload page on XR Session end to fix view
+    console.log('XR Session Ended. Reloading page...')
+    location.reload()
+}
+
+renderer.xr.addEventListener('sessionstart', StartXRSession)
+renderer.xr.addEventListener("sessionend", EndXRSession)
 
 updateTextMesh('Waiting for call to start...');
