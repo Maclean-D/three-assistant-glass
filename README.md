@@ -24,7 +24,11 @@ Customizable 3D conversational AI character
 - Custom animations (fbx)
 - Animated to voice assistant's voice
 
-### Expiremental
+### Holographic Display - [Looking Glass](https://lookingglassfactory.com/webxr)
+
+- View in 3d on any Looking Glass device
+
+### Experimental
 
 - Plaintext clipboard access
 
@@ -33,8 +37,6 @@ Customizable 3D conversational AI character
 - Show current time
 - Add setting to change size/scale of character
 - Add setting to move character backwards or forwards
-- Add customizable start/stop keybind
-- WebXR for [Looking Glass Go](https://lookingglassfactory.com/looking-glass-go)
 - Access to [Ask Limitless](https://feedback.limitless.ai/roadmap/ask-ai-anything) via [Selenium](https://www.selenium.dev/) upon public release
 - [01](https://github.com/OpenInterpreter/01) as a voice assistant option upon a stable 1.0 release
 
