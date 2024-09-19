@@ -122,6 +122,11 @@ Customizable 3D conversational AI character
 1. Open the `animations` folder
 2. Drag and drop your .fbx files into the folder
 
+### I turned off the Settings Icon, how do I get it back?
+
+1. Go back to http://localhost:3000/settings
+2. Turn on `Show Settings Icon`
+
 ## Troubleshooting
 
 - For 2d displays [Arc](https://arc.net/gift/friend-of-maclean) browser is recommended
