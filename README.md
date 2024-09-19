@@ -71,7 +71,7 @@ Customizable 3D conversational AI character
 
 6. Open Settings and save your [Vapi keys](https://dashboard.vapi.ai/org/api-keys)
 
-7. Pick a character model and voice assistant ([Create an assistant on Vapi](https://dashboard.vapi.ai/assistants)) first if you haven't already)
+7. Pick a character model and voice assistant ([Create an assistant on Vapi](https://dashboard.vapi.ai/assistants) first if you haven't already)
 
 8. Go back to http://localhost:3000/settings and click ▶️
 
