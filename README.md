@@ -73,7 +73,7 @@ Customizable 3D conversational AI character
 
 7. Pick a character model and voice assistant ([Create an assistant on Vapi](https://dashboard.vapi.ai/assistants) first if you haven't already)
 
-8. Go back to http://localhost:3000/settings and click ▶️
+8. Go back to http://localhost:3000/settings and click ▶️ to start the assistant
 
 ## View on a Looking Glass Display
 
@@ -86,6 +86,8 @@ Customizable 3D conversational AI character
 4. Click `Enter Looking Glass`
 
 5. (Recommended) Double click the window or press `f11` to enter full-screen
+
+6. Press the `▶️` button on your looking glass display or computer to start the assistant (Configurable in Settings)
 
 ## FAQ
 
