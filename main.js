@@ -991,7 +991,7 @@ const config = LookingGlassConfig
 config.targetY = 1
 config.targetZ = 0
 config.targetDiam = 1.5
-config.depthiness = 0.78
+config.depthiness = 0.8
 config.fovy = (40 * Math.PI) / 180
 new LookingGlassWebXRPolyfill()
 

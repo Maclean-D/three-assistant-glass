@@ -26,7 +26,7 @@ Customizable 3D conversational AI character
 
 ### Holographic Display - [Looking Glass](https://lookingglassfactory.com/webxr)
 
-- View in 3d on any Looking Glass device
+- View in 3d on any Looking Glass display
 
 ### Experimental
 
@@ -75,13 +75,17 @@ Customizable 3D conversational AI character
 
 8. Go back to http://localhost:3000/settings and click ▶️
 
-## How to view on a Looking Glass device
+## View on a Looking Glass Display
 
 1. Install [Looking Glass Bridge](https://lookingglassfactory.com/software/looking-glass-bridge)
 
-2. Plug in your Looking Glass Device
+2. Plug in your Looking Glass Display
 
-3. Click `Enter Looking Glass`
+3. (Recommended) Turn off `Show Settings Icon` in Settings
+
+4. Click `Enter Looking Glass`
+
+5. (Recommended) Double click the window or press `f11` to enter full-screen
 
 ## FAQ
 
@@ -118,7 +122,8 @@ Customizable 3D conversational AI character
 
 ## Troubleshooting
 
-- Try using [Arc](https://arc.net/gift/friend-of-maclean) as your browser
+- For 2d displays [Arc](https://arc.net/gift/friend-of-maclean) browser is recommended
+- For Looking Glass Displays [Chrome](https://www.google.com/chrome/) is recommended
 
 ## Star History
 
