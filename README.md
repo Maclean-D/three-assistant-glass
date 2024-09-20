@@ -85,7 +85,7 @@ Customizable 3D conversational AI character
 
 4. Click `Enter Looking Glass`
 
-5. (Recommended) Double click the window or press `f11` to enter full-screen
+5. Double click the window on the Looking Glass Display or press `f11` to enter full-screen
 
 6. Press the `▶️` button on your looking glass display or computer to start the assistant (Configurable in Settings)
 
