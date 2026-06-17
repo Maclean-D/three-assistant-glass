@@ -11,13 +11,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@vapi-ai/web": "^2.1.1",
-    "adm-zip": "^0.5.16",
-    "clipboardy": "^4.0.0",
-    "express": "^4.22.1",
-    "multer": "^2.0.2",
-    "open": "^8.4.2",
-    "three": "^0.168.0",
-    "ws": "^8.18.0"
+    "@vapi-ai/web": "*",
+    "adm-zip": "*",
+    "clipboardy": "*",
+    "express": "*",
+    "multer": "*",
+    "open": "*",
+    "three": "*",
+    "ws": "*"
   }
 }
