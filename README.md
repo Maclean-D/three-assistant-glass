@@ -132,7 +132,13 @@ Customizable 3D conversational AI character
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Maclean-D/three-assistant-glass&type=Date)](https://star-history.com/#Maclean-D/three-assistant-glass&Date)
+<a href="https://www.star-history.com/?repos=Maclean-D%2Fthree-assistant-glass&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Maclean-D/three-assistant-glass&type=date&theme=dark&legend=top-left&sealed_token=ZdRVvXf5rpSemWCkQJWj7KNRMNyB5nifpNNMnImrGWyHtS_9H8unaq2YuuPmV5FL-sAFfYnh4ekfizb5AFCBNoOHH-6eAK8W11scAY3va4TUI5uue3aYReauGSRpAbNkuTYFBgBwIoandxqKJ2ukmE1tupA6e3NkWwZmoUeQqqhTs8qAUT0JCp4D_1tu" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Maclean-D/three-assistant-glass&type=date&legend=top-left&sealed_token=ZdRVvXf5rpSemWCkQJWj7KNRMNyB5nifpNNMnImrGWyHtS_9H8unaq2YuuPmV5FL-sAFfYnh4ekfizb5AFCBNoOHH-6eAK8W11scAY3va4TUI5uue3aYReauGSRpAbNkuTYFBgBwIoandxqKJ2ukmE1tupA6e3NkWwZmoUeQqqhTs8qAUT0JCp4D_1tu" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Maclean-D/three-assistant-glass&type=date&legend=top-left&sealed_token=ZdRVvXf5rpSemWCkQJWj7KNRMNyB5nifpNNMnImrGWyHtS_9H8unaq2YuuPmV5FL-sAFfYnh4ekfizb5AFCBNoOHH-6eAK8W11scAY3va4TUI5uue3aYReauGSRpAbNkuTYFBgBwIoandxqKJ2ukmE1tupA6e3NkWwZmoUeQqqhTs8qAUT0JCp4D_1tu" />
+ </picture>
+</a>
 
 ## Contributors
 
